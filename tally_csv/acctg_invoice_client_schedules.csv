@@ -1,0 +1,9 @@
+cliend_id,date_only,transaction_note,transaction_product_variation,transaction_type,transaction_value
+123,2016-01-01,First estimate,,estimate,10000
+123,2016-05-01,April payment,,payment,5000
+123,2016-06-01,Q1 invoice,,bill,20000
+123,2016-02-01,First sales order,,sales order,10000
+325,2016-01-01,First estimate,,estimate,50000
+325,2016-05-01,April payment,,payment,2000
+325,2016-06-01,Q1 invoice,,bill,10000
+325,2016-02-01,First sales order,,sales order,50000
