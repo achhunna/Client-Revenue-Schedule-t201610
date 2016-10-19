@@ -31,11 +31,11 @@ if ( isset( $_COOKIE[ 'tally_user_id' ] ) ) {
 
         <form id="login_form" method="post">
             <div class="input_section">
-                <span class="input_heading">Username</span>
+                <div class="input_heading">Username</div>
                 <input type="text" class="input_box login_box" name="username">
             </div>
             <div class="input_section">
-                <span class="input_heading">Password</span>
+                <div class="input_heading">Password</div>
                 <input type="password" class="input_box login_box" name="password">
             </div>
             <div class="input_section">

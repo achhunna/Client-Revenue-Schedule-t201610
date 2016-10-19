@@ -38,8 +38,8 @@ if ( is_null( $wpdb) ) {
 
     <!-- Display logged in user -->
     <div class="heading_user">
-        Hello, <?php echo select_query_user( $mc_user_id ); ?>.<br>
-        <a href="" onclick="delete_cookie( 'tally_user_id' )">Log out</a>
+        <div class="user_id">Hello, <b><?php echo select_query_user( $mc_user_id ); ?></b></div>
+        <a href="" class="menu_link log_out" onclick="delete_cookie( 'tally_user_id' )">Log out</a>
     </div>
 
     <!-- Menu bar -->
@@ -58,6 +58,15 @@ if ( is_null( $wpdb) ) {
         <div class="wrapper">
             <div class="input_box client_box" contenteditable>Search Clients</div>
             <button>Search</button>
+        </div>
+
+        <div class="wrapper">
+            <!-- svg test
+            <svg width="250" height="250">
+                <rect x="50" y="50" width="25" height="25" fill="red"></rect>
+                <circle cx="100" cy="30" r="10"></circle>
+            </svg>
+            -->
         </div>
 
     </div>
@@ -117,14 +126,33 @@ if ( is_null( $wpdb) ) {
                     </tr>
                 </thead>
                 <tbody>
-                    <tr>
-                        <td></td>
-                        <td></td>
-                        <td></td>
-                        <td></td>
-                        <td></td>
-                        <td align="center"><button>Edit</button></td>
-                    </tr>
+
+                        <?php
+                        // acctg_invoice_client_schedules table query
+
+                        $results = select_query_client( $client_id, 'date_only, transaction_type, transaction_product_variation, transaction_value, transaction_note', $schedule_table );
+
+                        foreach ( $results as $row) {
+                        ?>
+                        <tr>
+                            <?php
+                            foreach ( $row as $key => $value ) {
+                            ?>
+                            <td contenteditable>
+                                <?php
+                                // Number format for $ value
+                                if ( $key == 'transaction_value' ) {
+                                    echo number_format( $value, 2 );
+                                } else {
+                                    echo $value;
+                                }
+                                ?>
+                            </td>
+                            <?php } ?>
+                            <td align="center"><button>Edit</button></td>
+                        </tr>
+                        <?php } ?>
+
                 </tbody>
             </table>
         </div>
@@ -143,7 +171,7 @@ if ( is_null( $wpdb) ) {
         <h2>Upload CSV</h2>
         <div class="wrapper">
             <form method="post" enctype="multipart/form-data">
-                Select CSV <input type="file" name="csv_file">
+                Select file to upload <input type="file" name="csv_file">
                 <button>Submit</button>
             </form>
 
@@ -194,7 +222,7 @@ if ( is_null( $wpdb) ) {
                             break;
                         case $schedule_table:
                             // Insert data from CSV
-                            insert_query_schedule( $csv_array[$i][0], $csv_array[$i][1], $csv_array[$i][2], $csv_array[$i][3],  $csv_array[$i][4], $csv_array[$i][5] );
+                            //insert_query_schedule( $csv_array[$i][0], $csv_array[$i][1], $csv_array[$i][2], $csv_array[$i][3],  $csv_array[$i][4], $csv_array[$i][5] );
 
                             break;
                     }

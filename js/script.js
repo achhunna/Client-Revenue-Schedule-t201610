@@ -65,13 +65,21 @@ $( document ).ready( function() {
 
 
     // Client search box
-    $( '.client_box' ).click( function(e) {
+    $( '.client_box' ).click( function() {
         $( this ).html( '' );
-    })
-    $( '.client_box' ).focusout( function(e) {
+    } )
+    $( '.client_box' ).focusout( function() {
         if ( $( this ).html() == '' ) {
             $( this ).html( 'Search Clients' );
         }
-    })
+    } )
+
+    /*
+    // Underline clicked menu
+    $( 'a' ).click( function() {
+        $( 'a' ).css( 'text-decoration', 'none' );
+        $( this ).css( 'text-decoration', 'underline' );
+    } )
+    */
 
 })
