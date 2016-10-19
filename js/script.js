@@ -1,3 +1,11 @@
+// Switch partial based on selection
+function switch_partial( selection ) {
+    // Hide all partial divs
+    $( '.partial' ).hide();
+    // Show selection div based on id
+    $( '#' + selection ).show();
+}
+
 // Update client_id query
 function update() {
     client_id = $('#client-id').html();
@@ -23,6 +31,7 @@ function update_dom( data ) {
     var parse_data = $.parseJSON( data );
     // Iterate through parse_data object to update text in field Div id
     for ( field in parse_data ) {
+        console.log( field + ': ' + parse_data[ field ] );
         $( '#' + field ).text( parse_data[ field ]);
     }
 
@@ -35,19 +44,11 @@ function delete_cookie( cookie_name ) {
 }
 
 
-// Switch partial based on selection
-function switch_partial( selection ) {
-    // Hide all partial divs
-    $( '.partial' ).hide();
-    // Show selection div based on id
-    $( '#' + selection ).show();
-}
-
 // Document ready
 $( document ).ready( function() {
 
     // Load default div
-    switch_partial( 'dashboard' );
+    switch_partial( 'client_detail' );
 
 
     // Client search box

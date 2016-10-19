@@ -2,9 +2,9 @@
 <div class="container">
 <?php
 // Calculate the path using $_SERVER for redirect
-$path = substr( $_SERVER[ 'REQUEST_URI' ], 0, strrpos( $_SERVER[ 'REQUEST_URI' ], '/' ) + 1 );
+$path = substr( $_SERVER['REQUEST_URI'], 0, strrpos( $_SERVER['REQUEST_URI'], '/' ) + 1 );
 // Check for user login cookie
-if ( isset( $_COOKIE[ 'tally_user_id' ] ) ) {
+if ( isset( $_COOKIE['tally_user_id'] ) ) {
     /* PHP redirect page */
     header( 'Location: ' . $path );
     exit();

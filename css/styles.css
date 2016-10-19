@@ -124,11 +124,11 @@ a.menu_link:hover {
     width: 200px;
 }
 button {
-    padding: 10px 20px 10px 20px;
+    padding: 5px 10px 5px 10px;
     margin-left: 10px; /* space between buttons */
     background-color: #bbb;
-    border-radius: 15px;
-    font-size: 15px;
+    border-radius: 12px;
+    font-size: 12px;
     border: none;
     cursor: pointer;
     -webkit-transition-duration: 0.2s; /* Safari */
@@ -151,7 +151,7 @@ table.list {
     border-spacing: 0px;
     overflow-x: auto;
     margin: 0 auto;
-    width: 80%;
+    width: 90%;
     min-width: 500px;
     table-layout: fixed;
     border-collapse: collapse;

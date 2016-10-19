@@ -5,13 +5,13 @@ include( 'header.php' );
 //echo dirname(__FILE__); // File path
 
 // Check for user login cookie
-if ( ! isset( $_COOKIE[ 'tally_user_id' ] ) ) {
+if ( ! isset( $_COOKIE['tally_user_id'] ) ) {
     // PHP redirect page
     header( 'Location: login.php' );
     exit();
 } else {
     // assign user logged in to mc_user_id variable
-    $mc_user_id = $_COOKIE[ 'tally_user_id' ];
+    $mc_user_id = $_COOKIE['tally_user_id'];
 }
 
 ?>
@@ -44,8 +44,8 @@ if ( is_null( $wpdb) ) {
 
     <!-- Menu bar -->
     <div class="menu">
-        <a href="#" class="menu_link" onclick="switch_partial( 'dashboard' )">Dashboard</a>
         <a href="#" class="menu_link" onclick="switch_partial( 'client_detail' )">Client Detail</a>
+        <a href="#" class="menu_link" onclick="switch_partial( 'dashboard' )">Dashboard</a>
         <a href="#" class="menu_link" onclick="switch_partial( 'csv_upload' )">Upload CSV</a>
     </div>
 

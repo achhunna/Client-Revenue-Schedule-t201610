@@ -7,10 +7,10 @@
     <?php
 
     // Process uploaded CSV file
-    if ( isset( $_FILES ) && $_FILES[ 'csv_file' ][ 'type' ] == 'text/csv' && $_FILES[ 'csv_file' ][ 'size' ] != 0 ) {
+    if ( isset( $_FILES ) && $_FILES['csv_file']['type'] == 'text/csv' && $_FILES['csv_file']['size'] != 0 ) {
 
-        $file = $_FILES[ 'csv_file' ][ 'tmp_name' ];
-        $filename = $_FILES[ 'csv_file' ][ 'name' ];
+        $file = $_FILES['csv_file']['tmp_name'];
+        $filename = $_FILES['csv_file']['name'];
         $table_name = substr( $filename, 0, strrpos( $filename, '.' ) );
         $file_handle = fopen( $file, 'r' );
 
@@ -41,17 +41,17 @@
                     break;
                 case $client_deals_table:
                     // Insert data from CSV
-                    //insert_query_client_deals( $csv_array[$i][0], $csv_array[$i][1], $csv_array[$i][2], $csv_array[$i][3] );
+                    //insert_query_client_deals( $csv_array[ $i ][0], $csv_array[ $i ][1], $csv_array[ $i ][2], $csv_array[ $i ][3] );
 
                     // Update the login
-                    foreach ( $csv_array[$i]  as $item ) {
+                    foreach ( $csv_array[ $i ]  as $item ) {
                         echo $item . '<br>';
                     }
 
                     break;
                 case $schedule_table:
                     // Insert data from CSV
-                    //insert_query_schedule( $csv_array[$i][0], $csv_array[$i][1], $csv_array[$i][2], $csv_array[$i][3],  $csv_array[$i][4], $csv_array[$i][5] );
+                    //insert_query_schedule( $csv_array[ $i ][0], $csv_array[ $i ][1], $csv_array[ $i ][2], $csv_array[ $i ][3],  $csv_array[ $i ][4], $csv_array[ $i ][5] );
 
                     break;
             }

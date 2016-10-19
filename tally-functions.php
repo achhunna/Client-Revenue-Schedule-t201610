@@ -199,6 +199,7 @@ function set_cookie( $user ) {
     setcookie( 'tally_user_id', $user->ID, time() + (86400 * 30), "/"); // 86400 = 1 day
 }
 
+
 /*
 Early work
 // get_results

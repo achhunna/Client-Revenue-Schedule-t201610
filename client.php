@@ -1,3 +1,10 @@
+
+<div class="wrapper">
+    <button onclick="update();">Update</button>
+    <button>Add</button>
+    <button>Delete</button>
+</div>
+
 <div class="wrapper">
 
     <?php
@@ -37,6 +44,9 @@
 </div>
 
 <div class="wrapper">
+    <div class="input_section">
+        <span class="input_heading">Client Schedules</span>
+    </div>
     <table class="list">
         <thead>
             <tr>
@@ -80,10 +90,6 @@
     </table>
 </div>
 
-<div class="wrapper">
-    <button onclick="update();">Update</button>
-    <button>Add</button>
-    <button>Delete</button>
-</div>
 
+<!-- Leave blank for spacing -->
 <div class="wrapper"></div>
