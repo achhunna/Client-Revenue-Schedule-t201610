@@ -34,34 +34,20 @@ function delete_cookie( cookie_name ) {
     location.reload();
 }
 
-// Show dashboard
-function show_dashboard() {
-    $( '#client_detail' ).hide();
-    $( '#dashboard' ).show();
-    $( '#csv_upload').hide();
-}
 
-// Show client detail
-function show_client() {
-    $( '#client_detail' ).show();
-    $( '#dashboard' ).hide();
-    $( '#csv_upload').hide();
+// Switch partial based on selection
+function switch_partial( selection ) {
+    // Hide all partial divs
+    $( '.partial' ).hide();
+    // Show selection div based on id
+    $( '#' + selection ).show();
 }
-
-// Show CSV upload
-function show_csv_upload() {
-    $( '#client_detail' ).hide();
-    $( '#dashboard' ).hide();
-    $( '#csv_upload').show();
-}
-
 
 // Document ready
 $( document ).ready( function() {
 
-    // Hide divs on load
-    $( '#client_detail' ).hide();
-    $( '#csv_upload' ).hide();
+    // Load default div
+    switch_partial( 'dashboard' );
 
 
     // Client search box
