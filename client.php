@@ -5,7 +5,7 @@
     <button>Delete</button>
 </div>
 
-<div class="wrapper">
+<div class="wrapper" id="client_info">
 
     <?php
     // acctg_invoice_clients table query
@@ -16,19 +16,19 @@
     $output_array = parse_client_meta( $output );
 
     // Insert client_id into output array
-    $client_array = array ( 'client-id' => $client_id );
+    $client_array = array ( 'client_id' => $client_id );
     $output_array = $client_array + $output_array;
 
     foreach ( $output_array as $key => $value ) { ?>
-        <div class="input_section">
-            <span class="input_heading"><?php echo ucfirst( $key ); ?></span>
-            <div class="input_box"  id="<?php echo $key; ?>" contenteditable><?php echo $value; ?></div>
-        </div>
+    <div class="input_section">
+        <span class="input_heading"><?php echo ucfirst( $key ); ?></span>
+        <div class="input_box"  id="<?php echo $key; ?>" contenteditable><?php echo $value; ?></div>
+    </div>
     <?php } ?>
 
 </div>
 
-<div class="wrapper">
+<div class="wrapper" id="client_deal">
 
     <?php
     // acctg_invoice_clients_key_dates table query
