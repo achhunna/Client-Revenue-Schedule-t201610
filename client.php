@@ -58,7 +58,7 @@
                 <th>Action</th>
             </tr>
         </thead>
-        <tbody>
+        <tbody id="schedule_table">
 
                 <?php
                 // acctg_invoice_client_schedules table query

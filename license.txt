@@ -19,8 +19,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 This program incorporates work covered by the following copyright and
 permission notices:
 
-  2016 Achhunna Mali - achhunna@gmail.com -
-  http://achhunna.com
+  2016 Automattic Inc.
 
   Wherever third party code has been used, credit has been given in the code's
   comments.

@@ -14,7 +14,7 @@ function update() {
     $.ajax({
         type: 'post',
         url: 'tally-ajax.php',
-        data: '&action=update&client_id=' + client_id + '&fields=meta_key, meta_value&table=acctg_invoice_clients',
+        data: '&action=update&client_id=' + client_id,
         success: function( data ) {
 
             if( !data ) {
@@ -28,11 +28,36 @@ function update() {
 
 // Update DOM elements
 function update_dom( data ) {
-    var parse_data = $.parseJSON( data );
-    // Iterate through parse_data object to update text in field Div id
-    for ( field in parse_data ) {
-        console.log( field + ': ' + parse_data[ field ] );
-        $( '#' + field ).text( parse_data[ field ]);
+    // Parse string into data to JSON object
+    var parse_obj = $.parseJSON( data );
+    // Iterate through parse_data object to update DOM
+    for ( field in parse_obj ) {
+        //console.log( field + ': ' + parse_data[ field ] );
+        if( field === 'schedule_array' ) {
+            // Parse string inside schedule_array into JSON object
+            var parse_obj_schedule = $.parseJSON( parse_obj[ field ] );
+
+            // Create table_string to join tags
+            var table_string = '';
+
+            for ( rows in parse_obj_schedule ) {
+                table_string += '<tr>';
+                for ( field in parse_obj_schedule[ rows ] ) {
+                    table_string += '<td contenteditable>';
+                    var td_content = parse_obj_schedule[ rows ][ field ];
+                    //console.log( rows + ') ' + field + ': ' + td_content );
+                    table_string += td_content;
+                    table_string += '</td>';
+                }
+                table_string += '<td align="center"><button>Edit</button></td>';
+                table_string += '</tr>';
+            }
+            // Update schedule_table text with complete string
+            $( '#schedule_table' ).html( table_string );
+
+        } else {
+            $( '#' + field ).html( parse_obj[ field ] );
+        }
     }
 
 }

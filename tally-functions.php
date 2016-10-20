@@ -12,11 +12,11 @@ require_once( '../../wordpress/wp-includes/wp-db.php' );
 // header( 'Content-Type: text/plain' ); // for CSV reading demo
 
 // Define variables
-$client_table = 'acctg_invoice_clients';
+$client_table       = 'acctg_invoice_clients';
 $client_deals_table = 'acctg_invoice_clients_key_dates';
-$schedule_table = 'acctg_invoice_client_schedules';
-$change_log_table = 'acctg_change_log';
-$client_id = 123;
+$schedule_table     = 'acctg_invoice_client_schedules';
+$change_log_table   = 'acctg_change_log';
+$client_id          = 123;
 
 global $client_table, $client_deals_table, $client_id;
 
@@ -162,8 +162,9 @@ function read_csv( $file ) {
 function parse_client_meta( $output ) {
     foreach ( $output as $key => $value ) {
 
-        $array = explode( ',', $value );
+        $array      = explode( ',', $value );
         $fill_array = array();
+
         foreach ( $array as $item ) {
             // Push item into fill_array and remove empty space
             array_push( $fill_array, trim ( $item ) );
@@ -181,10 +182,10 @@ function parse_client_meta( $output ) {
 
 // WP login check function
 function wp_tally_login( $username, $password ) {
-    $credentials = array();
-    $credentials['user_login'] = $username;
+    $credentials                  = array();
+    $credentials['user_login']    = $username;
     $credentials['user_password'] = $password;
-    $credentials['remember'] = false;
+    $credentials['remember']      = false;
 
     $user = wp_signon( $credentials, false );
 

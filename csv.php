@@ -9,12 +9,12 @@
     // Process uploaded CSV file
     if ( isset( $_FILES ) && $_FILES['csv_file']['type'] == 'text/csv' && $_FILES['csv_file']['size'] != 0 ) {
 
-        $file = $_FILES['csv_file']['tmp_name'];
-        $filename = $_FILES['csv_file']['name'];
-        $table_name = substr( $filename, 0, strrpos( $filename, '.' ) );
+        $file        = $_FILES['csv_file']['tmp_name'];
+        $filename    = $_FILES['csv_file']['name'];
+        $table_name  = substr( $filename, 0, strrpos( $filename, '.' ) );
         $file_handle = fopen( $file, 'r' );
 
-        $csv_array = read_csv( $file_handle );
+        $csv_array   = read_csv( $file_handle );
 
         /*
         foreach ( $csv_array as $row ) {
