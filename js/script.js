@@ -1,3 +1,8 @@
+// Number format function
+function number_format( input ) {
+    return input.toString().replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1,');
+}
+
 // Switch partial based on selection
 function switch_partial( selection ) {
     // Hide all partial divs
@@ -13,8 +18,9 @@ function update() {
     // Ajax call to update client
     $.ajax({
         type: 'post',
-        url: 'tally-ajax.php',
+        url: 'ajax.php',
         data: '&action=update&client_id=' + client_id,
+        cache:  false,
         success: function( data ) {
 
             if( !data ) {
@@ -42,15 +48,17 @@ function update_dom( data ) {
 
             for ( rows in parse_obj_schedule ) {
                 table_string += '<tr>';
+
                 for ( field in parse_obj_schedule[ rows ] ) {
-                    table_string += '<td contenteditable>';
                     var td_content = parse_obj_schedule[ rows ][ field ];
-                    //console.log( rows + ') ' + field + ': ' + td_content );
-                    table_string += td_content;
-                    table_string += '</td>';
+                    // Append each value into table
+                    if ( field === 'transaction_value' ) {
+                        td_content = number_format( td_content );
+                    }
+                    table_string += '<td contenteditable>' + td_content + '</td>';
                 }
-                table_string += '<td align="center"><button>Edit</button></td>';
-                table_string += '</tr>';
+
+                table_string += '<td align="center"><button>Edit</button></td></tr>';
             }
             // Update schedule_table text with complete string
             $( '#schedule_table' ).html( table_string );

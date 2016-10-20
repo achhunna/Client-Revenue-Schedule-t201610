@@ -1,6 +1,6 @@
 <?php
 
-include( 'tally-functions.php' );
+include( 'functions.php' );
 
 // Define POST variables
 $action    = $_POST['action'];

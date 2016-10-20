@@ -9,8 +9,8 @@ if ( isset( $_COOKIE['tally_user_id'] ) ) {
     header( 'Location: ' . $path );
     exit();
 } else {
-    // Load tally-functions
-    include( 'tally-functions.php' );
+    // Load functions
+    include( 'functions.php' );
 
     if ( isset( $_POST['username'] ) && ! empty( $_POST['username'] ) && isset( $_POST['password'] ) && ! empty( $_POST['password'] ) ) {
         $user = wp_tally_login( $_POST['username'], $_POST['password']);

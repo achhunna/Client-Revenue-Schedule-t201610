@@ -26,6 +26,9 @@ global $client_table, $client_deals_table, $client_id;
 function select_query_client( $client_id, $fields, $table ) {
     global $wpdb;
 
+    // Escaping single quote to avoid sql injection
+    $fields = addslashes( $fields );
+
     $results = $wpdb->get_results( $wpdb->prepare (
             "
                 SELECT $fields

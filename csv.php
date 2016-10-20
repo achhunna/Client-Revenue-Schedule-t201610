@@ -1,7 +1,10 @@
 <div class="wrapper">
     <form method="post" enctype="multipart/form-data">
-        Select file to upload <input type="file" name="csv_file">
-        <button>Submit</button>
+        <div class="input_section">
+            <div class="input_heading">Select file to upload</div>
+            <input type="file" name="csv_file">
+            <button>Submit</button>
+        </div>
     </form>
 
     <?php

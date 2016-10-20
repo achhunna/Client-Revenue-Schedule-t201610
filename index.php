@@ -23,8 +23,8 @@ if ( ! isset( $_COOKIE['tally_user_id'] ) ) {
 </div>
 -->
 <?php
-// Load tally-functions
-include( 'tally-functions.php' );
+// Load functions
+include( 'functions.php' );
 
 // Check if $wpdb is null
 if ( is_null( $wpdb) ) {
