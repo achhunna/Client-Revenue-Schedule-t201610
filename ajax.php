@@ -37,7 +37,7 @@ if ( $action == 'update' ) {
         echo json_encode( $output_array );
 
     } else {
-        echo 'Client_id not found';
+        echo false;
     }
 }
 

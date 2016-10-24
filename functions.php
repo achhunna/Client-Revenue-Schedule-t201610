@@ -159,6 +159,48 @@ function read_csv( $file ) {
     return $rows;
 }
 
+// Parse into meta_key and meta_value for client_table
+function parse_meta_client( $csv_array, $table_name ) {
+    global $client_table;
+    // Parse if client_table
+    if ( $table_name == $client_table ) {
+
+        $return_array = array();
+
+        foreach ( $csv_array as $key1 => $array ) {
+
+            foreach ( $array as $key2 => $value ) {
+                // Iterating first row for column heading
+                if ( $key2 == 0 ) {
+                    if ( $key1 == 0 ) {
+                        array_push( $return_array, array( $value, 'meta_key', 'meta_value' ) );
+                    } else {
+                        // Get cliend_id
+                        $client_id = $value;
+                    }
+                } else {
+                    if ( $key1 == 0 ) {
+                        $meta_key .= $value . ',';
+                    } else {
+                        $meta_value .= $value . ',';
+                    }
+                }
+            }
+
+        }
+
+        // Add second row into array
+        array_push( $return_array, array( $client_id, rtrim( $meta_key, ',' ), rtrim( $meta_value, ',') ) );
+
+        // Iterating remaining rows
+
+
+        return $return_array;
+
+    } else {
+        return $csv_array;
+    }
+}
 
 /* Other functions */
 // Parse client meta_key and meta_value into array( key, value )
@@ -169,7 +211,7 @@ function parse_client_meta( $output ) {
         $fill_array = array();
 
         foreach ( $array as $item ) {
-            // Push item into fill_array and remove empty space
+            // Push item into fill_array and remove empty space trim()
             array_push( $fill_array, trim ( $item ) );
         }
 

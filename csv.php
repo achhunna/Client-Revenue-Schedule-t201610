@@ -2,8 +2,8 @@
     <form method="post" enctype="multipart/form-data">
         <div class="input_section">
             <div class="input_heading">Select file to upload</div>
-            <input type="file" name="csv_file">
-            <button>Submit</button>
+            <input type="file" name="csv_file" accept=".csv">
+            <button onclick="switch_partial( 'csv_upload' )">Submit</button>
         </div>
     </form>
 
@@ -17,36 +17,29 @@
         $table_name  = substr( $filename, 0, strrpos( $filename, '.' ) );
         $file_handle = fopen( $file, 'r' );
 
-        $csv_array   = read_csv( $file_handle );
+        $csv_array   = parse_meta_client( read_csv( $file_handle ), $table_name );
 
-        /*
-        foreach ( $csv_array as $row ) {
-            // CSV heading
-            foreach ( $csv_array[0] as $item ) {
-
-                echo $item . ':';
-            }
-            echo '<br>';
-
-            foreach ( $row as $item ) {
-
-                echo $item . ',';
-            }
-            echo '<br><br>';
-        }
-        */
-
+        echo 'Array inserted into database:' . '<br>';
+        print_r( $csv_array );
+        echo '<br><br>';
 
         for ( $i = 1; $i < count( $csv_array ); $i++ ) {
             switch ( $table_name ) {
                 case $client_table:
+                    // Insert data from CSV
+                    //insert_query_client( $csv_array[ $i ][0], $csv_array[ $i ][1], $csv_array[ $i ][2] );
+
+                    // Print items
+                    foreach ( $csv_array[ $i ] as $item ) {
+                        echo $item . '<br>';
+                    }
 
                     break;
                 case $client_deals_table:
                     // Insert data from CSV
                     //insert_query_client_deals( $csv_array[ $i ][0], $csv_array[ $i ][1], $csv_array[ $i ][2], $csv_array[ $i ][3] );
 
-                    // Update the login
+                    // Print items
                     foreach ( $csv_array[ $i ]  as $item ) {
                         echo $item . '<br>';
                     }
@@ -56,10 +49,14 @@
                     // Insert data from CSV
                     //insert_query_schedule( $csv_array[ $i ][0], $csv_array[ $i ][1], $csv_array[ $i ][2], $csv_array[ $i ][3],  $csv_array[ $i ][4], $csv_array[ $i ][5] );
 
-                    break;
-            }
-        }
+                    // Print items
+                    foreach ( $csv_array[ $i ]  as $item ) {
+                        echo $item . '<br>';
+                    }
 
+                    break;
+                }
+        }
 
         fclose( $file_handle );
     }

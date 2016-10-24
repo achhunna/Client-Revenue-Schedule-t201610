@@ -23,6 +23,7 @@
     <div class="input_section">
         <span class="input_heading"><?php echo ucfirst( $key ); ?></span>
         <div class="input_box"  id="<?php echo $key; ?>" contenteditable><?php echo $value; ?></div>
+        <span id="error"></span>
     </div>
     <?php } ?>
 

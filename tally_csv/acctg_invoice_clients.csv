@@ -1,2 +1,2 @@
-client_id,name,sf_link
-234,Nytimes,https://salesforce.com/nytimes
+client_id,name,sf_link,email,address
+234,Nytimes,https://salesforce.com/nytimes,contact@nytimes.com,350 Bay St. San Francisco CA 94133

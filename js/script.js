@@ -29,7 +29,8 @@ function update() {
         success: function( data ) {
 
             if( !data ) {
-                console.log( "Error" );
+                $( '#error' ).html('Not Found');
+
             } else {
                 update_dom( data );
             }
@@ -51,32 +52,6 @@ function update_dom( data ) {
 
         // Route property to correct section
         if( property === 'client_schedule' ) {
-            /*
-            // Parse string inside client_schedule into JSON object
-            var parse_obj_schedule = $.parseJSON( parse_obj[ property ] );
-
-            // Create table_string to join tags
-            var table_string = '';
-
-            for ( rows in parse_obj_schedule ) {
-                table_string += '<tr>';
-
-                for ( field in parse_obj_schedule[ rows ] ) {
-                    var td_content = parse_obj_schedule[ rows ][ field ];
-                    // Append each value into table
-                    if ( field === 'transaction_value' ) {
-                        td_content = number_format( td_content );
-                    }
-                    table_string += '<td contenteditable>' + td_content + '</td>';
-                }
-
-                table_string += '<td align="center"><button>Edit</button></td></tr>';
-            }
-            // Update schedule_table text with complete string
-            $( '#schedule_table' ).html( table_string );
-            */
-            //console.log( 'schedule: ' + parse_obj_data );
-
 
             for ( rows in parse_obj_data ) {
                 placeholder += '<tr>';
@@ -101,7 +76,7 @@ function update_dom( data ) {
 
             for ( rows in parse_obj_data ) {
                 //console.log( 'info: ' + rows + ': ' + parse_obj_data[ rows ] );
-                placeholder += '<div class="input_section"><span class="input_heading">' + ucfirst( rows ) + '</span><div class="input_box" id="' + rows + '" contenteditable>' +  parse_obj_data[ rows ] + '</div></div>';
+                placeholder += '<div class="input_section"><span class="input_heading">' + ucfirst( rows ) + '</span><div class="input_box" id="' + rows + '" contenteditable>' +  parse_obj_data[ rows ] + '</div><span id="error"></span></div>';
             }
 
             // Update client_info text with complete string

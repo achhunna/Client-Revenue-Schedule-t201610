@@ -144,6 +144,10 @@ button:active {
     background-color: #ddd;
     color: #aaa;
 }
+#error {
+    color: #f00;
+    padding-left: 10px;
+}
 
 
 /* table */
