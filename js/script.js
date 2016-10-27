@@ -86,6 +86,8 @@ function update_dom( data ) {
 
 }
 
+
+
 // Delete cookie
 function delete_cookie( cookie_name ) {
     document.cookie = cookie_name + '=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/';
@@ -97,7 +99,7 @@ function delete_cookie( cookie_name ) {
 $( document ).ready( function() {
 
     // Load default div
-    switch_partial( 'client_detail' );
+    switch_partial( 'dashboard' );
 
 
     // Client search box
@@ -109,6 +111,7 @@ $( document ).ready( function() {
             $( this ).html( 'Search Clients' );
         }
     } )
+
 
     /*
     // Underline clicked menu

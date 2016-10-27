@@ -1,2 +1,6 @@
-client_id,name,sf_link,email,address
-234,Nytimes,https://salesforce.com/nytimes,contact@nytimes.com,350 Bay St. San Francisco CA 94133
+client_id,name,sf_link,email
+123,Turner,https://salesforce.com/turner,contact@turner.com
+234,Nytimes,https://salesforce.com/nytimes,contact@nytimes.com
+325,Microsoft,https://salesforce.com/microsoft,contact@microsoft.com
+456,Wired,https://salesforce.com/wired,contact@wired.com
+567,Wirecutter,https://salesforce.com/wirecutter,contact@wirecutter.com

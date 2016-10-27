@@ -169,7 +169,20 @@ td {
     padding: 5px;
     border: 1px solid;
 }
-
+.clear {
+    background-color: transparent;
+    border: 0px;
+}
+.tab {
+    padding-left: 20px;
+}
+.tab2 {
+    padding-left: 40px;
+}
+tr.no_border td {
+    border: none;
+    height: 20px;
+}
 
 /* footer */
 .footer {
