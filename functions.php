@@ -437,7 +437,7 @@ function log_change( $mc_user_id, $source, $table_change, $reference_id, $change
         '%s'
     );
 
-    insert_new_record( $table, $input_array, $format_array );
+    return insert_new_record( $table, $input_array, $format_array );
 
 }
 
@@ -474,8 +474,8 @@ function last_reference_id( $table ) {
 
 
 // CSV log change function
-function csv_log_change( $table_name, $reference_id, $csv_array ) {
-    global $tables, $mc_user_id;
+function csv_log_change( $mc_user_id, $table_name, $reference_id, $csv_array ) {
+    global $tables;
 
     $j = 0;
 
@@ -484,12 +484,14 @@ function csv_log_change( $table_name, $reference_id, $csv_array ) {
         // Check if write is true for field
         if ( $value['write'] ) {
 
+
             // Log changes
             log_change( $mc_user_id, 'csv', $table_name, $reference_id, 'add', $key, '', $csv_array[ $j ] );
             $j += 1;
         }
 
     }
+
 }
 
 
@@ -545,10 +547,7 @@ function parse_meta_client( $csv_array, $table_name ) {
                 array_push( $return_array, array( $client_id, rtrim( $meta_key, ',' ), rtrim( $meta_value, ',') ) );
             }
 
-            //echo 'key:' . $key1 . '<br>';
         }
-
-        // Iterating remaining rows
 
         return $return_array;
 

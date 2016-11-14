@@ -14,6 +14,20 @@ function switch_partial( selection ) {
     $( '.partial' ).hide();
     // Show selection div based on id
     $( '#' + selection ).show();
+
+    // Hide all underline
+    $( '.menu_link' ).css( 'text-decoration', 'none' );
+    // Underline selected text
+    $( '#' + selection + '_link' ).css( 'text-decoration', 'Underline' );
+}
+
+// Check browser support for HTML5 File API
+function file_supported() {
+    var isCompatible = false;
+    if ( window.File && window.FileReader && window.FileList && window.Blob ) {
+        isCompatible = true;
+    }
+    return isCompatible;
 }
 
 // Update client_id query
@@ -24,13 +38,12 @@ function update() {
     $.ajax({
         type: 'post',
         url: 'ajax.php',
-        data: '&action=update&client_id=' + client_id,
+        data: '&action=update_client&client_id=' + client_id,
         cache:  false,
         success: function( data ) {
 
             if( !data ) {
                 $( '#error' ).html('Not Found');
-
             } else {
                 update_dom( data );
             }
@@ -86,7 +99,106 @@ function update_dom( data ) {
 
 }
 
+// Upload CSV
+function upload_csv() {
 
+    // Check if file is selected
+    if ( $( '#csv_file' ).val() != '' ) {
+        if ( !file_supported() ) {
+            alert( 'The File APIs are not fully supported in this browser!' );
+        } else {
+            // Remove previous csv output div
+            $( '#csv_output' ).html('');
+
+            // Parse CSV file to display in table
+            var data = null;
+            var csv_file = $( 'input#csv_file' ).prop( 'files' )[0];
+            var reader = new FileReader();
+
+
+            // HTML5 FileReader to display CSV file
+            reader.readAsText( csv_file );
+            // Get filename
+            reader.fileName = csv_file.name;
+            reader.onload = function ( e ) {
+                var csv_data = e.target.result;
+                // Convert data to array
+                csv_array = $.csv.toArrays( csv_data );
+                // Extract table name from filename
+                table_name = reader.fileName.substr( 0, reader.fileName.indexOf( '.' ) );
+
+                if ( csv_array && csv_array.length > 0 ) {
+
+                    var heading = '<thead>';
+                    var body = '<tbody>';
+
+                    // Update div with csv_array
+                    for ( key in csv_array ) {
+
+                        heading += '<tr>';
+                        body += '<tr>';
+
+                        for ( item in csv_array[ key ] ) {
+                            // For table heading
+                            if ( key === '0' ) {
+                                heading += '<th>' + csv_array[ key ][ item ] + '</th>';
+                            } else {
+                                body += '<td>' + csv_array[ key ][ item ] + '</td>';
+                            }
+
+                        }
+                        if ( key === '0' ) {
+                            heading += '</tr>';
+                        }
+                        body += '</tr>';
+
+                    }
+                    heading += '</thead>';
+                    body += '</tbody>';
+
+                    // Append head and body to table
+                    $( '#csv_output' ).append( heading + body );
+
+                    // Unhide CSV output container
+                    $( '#csv_output_container' ).show();
+                }
+
+            };
+            reader.onerror = function() {
+                alert( 'Unable to read ' + csv_file.fileName );
+            };
+
+        }
+
+        // Reset input file
+        $( '#csv_file' ).replaceWith( $( '#csv_file' ).val( '' ).clone( true ) );
+    }
+}
+
+// Cancel CSV upload
+function reset_csv_upload() {
+
+    // Hide CSV output container
+    $( '#csv_output_container' ).hide();
+    // Remove csv output div
+    $( '#csv_output' ).html('');
+}
+
+
+// Post CSV file
+function post_csv_upload() {
+
+    // Ajax call to upload CSV
+    $.ajax({
+        type: 'post',
+        url: 'ajax.php',
+        data: { 'action': 'parse_csv', 'table_name': table_name, 'csv_array': csv_array },
+        success: function( data ) {
+            // Refresh page
+            location.reload();
+        }
+    });
+}
 
 // Delete cookie
 function delete_cookie( cookie_name ) {
@@ -112,6 +224,9 @@ $( document ).ready( function() {
         }
     } )
 
+    // Hide CSV output container
+    $( '#csv_output_container' ).hide();
+
 
     /*
     // Underline clicked menu
@@ -120,5 +235,15 @@ $( document ).ready( function() {
         $( this ).css( 'text-decoration', 'underline' );
     } )
     */
+
+    // AjaxForm to bind 'csv_form' to callback function, when it is used
+    /*
+    $( '#csv_form' ).ajaxForm( function () {
+        alert( 'test' );
+    } );
+    */
+
+    var csv_array = '';
+    var table_name = '';
 
 })

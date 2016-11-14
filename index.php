@@ -44,9 +44,9 @@ if ( is_null( $wpdb) ) {
 
     <!-- Menu bar -->
     <div class="menu">
-        <a href="#" class="menu_link" onclick="switch_partial( 'client_detail' )">Client Detail</a>
-        <a href="#" class="menu_link" onclick="switch_partial( 'dashboard' )">Dashboard</a>
-        <a href="#" class="menu_link" onclick="switch_partial( 'csv_upload' )">Upload CSV</a>
+        <a href="#" id="dashboard_link" class="menu_link" onclick="switch_partial( 'dashboard' )">Dashboard</a>
+        <a href="#" id="client_detail_link" class="menu_link" onclick="switch_partial( 'client_detail' )">Client Detail</a>
+        <a href="#" id="csv_upload_link" class="menu_link" onclick="switch_partial( 'csv_upload' )">Upload CSV</a>
     </div>
 
 

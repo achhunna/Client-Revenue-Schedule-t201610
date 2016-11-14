@@ -1,13 +1,24 @@
 <div class="wrapper">
-    <form method="post" enctype="multipart/form-data">
+    <!--<form id="csv_form" method="post" enctype="multipart/form-data">-->
         <div class="input_section">
             <div class="input_heading">Select file to upload</div>
-            <input type="file" name="csv_file" accept=".csv">
-            <button>Submit</button>
+            <input type="file" name="csv_file" id="csv_file" accept=".csv">
+            <button onclick="upload_csv()">Submit</button>
         </div>
-    </form>
+    <!--</form>-->
+
+    <div class="container" id="csv_output_container">
+        <b>Ready to upload?</b>
+        <button onclick="post_csv_upload()">Upload</button>
+        <button onclick="reset_csv_upload()">Cancel</button>
+        <br><br>
+        <table class="list" id="csv_output">
+
+        </table>
+    </div>
 
     <?php
+    /*
 
     // Process uploaded CSV file
     if ( isset( $_FILES ) && $_FILES['csv_file']['type'] == 'text/csv' && $_FILES['csv_file']['size'] != 0 ) {
@@ -49,7 +60,6 @@
                     </tr>
                 </tbody>
                 <?php
-                }
 
 
                 // Insert data into table
@@ -74,7 +84,7 @@
                     // Make update to log table
                     csv_log_change( $table_name, $reference_id, $csv_array[ $i ] );
 
-                
+                }
             } ?>
         </table>
         <?php
@@ -83,6 +93,7 @@
 
             fclose( $file_handle );
         }
+        */
         ?>
 </div>
 

@@ -1,4 +1,4 @@
-cliend_id,date_only,transaction_note,transaction_product_variation,transaction_type,transaction_value
+client_id,date_only,transaction_note,transaction_product_variation,transaction_type,transaction_value
 123,2016-01-01,First estimate,,estimate,10000
 123,2016-05-01,April payment,,payment,5000
 123,2016-06-01,Q1 invoice,,bill,20000
