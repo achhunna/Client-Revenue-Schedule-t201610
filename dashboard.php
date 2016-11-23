@@ -1,7 +1,9 @@
+<!--
 <div class="wrapper">
     <div class="input_box client_box" contenteditable>Search Clients</div>
     <button>Search</button>
 </div>
+-->
 
 <div class="wrapper">
 
@@ -15,6 +17,14 @@
 
                 </th>
                 <?php
+
+                $input_array = array(
+                    'client_id' => '123',
+                    'meta_key' => 'name,sf_link,email',
+                    'meta_value' => 'Turner,https://salesforce.com/turner,contact@turner.com'
+                );
+                print_r( track_field_change( '123', $client_table, $input_array )['old'] );
+
 
                 // Define months array
                 $months_array = array(
@@ -44,8 +54,20 @@
                         <td class="clear"><?php echo $count; ?></td>
 
                         <?php
+                        // Monthly data
                         foreach ( $months_array as $month ) { ?>
-                            <td> <?php echo $count . ': ' . $month; ?> </td>
+                            <td> <?php
+                                 if ( $count == 'Beginning' ) {
+                                     echo $month;
+                                 } else if ( $count == 'Adds' ) {
+                                     echo '1';
+                                 } else if ( $count == 'Terminations' ) {
+                                     echo '-1';
+                                 } else {
+                                     echo ( $month + 1 );
+                                 }
+                                 ?>
+                             </td>
                         <?php }
 
                         ?>
@@ -113,36 +135,63 @@
         <tbody>
 
             <?php
+            // Query with desc sort option
+            $results = select_query_log_sort( 'log_date, change_type, table_change, mc_user_id, log_id', $change_log_table, 'log_id', 'desc' );
+            $counter = 0;
+            $log_id = 0;
 
-            $results = select_query_log( 'log_date, change_type, table_change, display_name', $change_log_table );
 
             if ( $results ) {
+
                 foreach ( $results as $row ) {
-                    ?>
+                ?>
                 <tr>
                         <?php
                         foreach ( $row as $key => $value ) {
                         ?>
-                    <td contenteditable>
+                    <td>
                             <?php
-                            // Number format for $ value
-                            if ( $key == 'transaction_value' ) {
+
+                            if ( $key == 'log_date' ) {
+                                // Convert UTC date to local time
+                                $utc = strtotime( $value . ' UTC' );
+                                echo date( 'Y-m-d H:i:s', $utc );
+                            } else if ( $key == 'transaction_value' ) {
+                                // Number format for $ value
                                 echo number_format( $value, 2 );
+                            } else if ( $key == 'log_id' ) {
+                                $log_id = intval( $value );
+                                $display_array = json_encode( select_query_log_id( 'log_date, table_change, change_type, field_change, old_value, new_value', $change_log_table, $log_id )[0] );
+                                echo '<script>var dashboard_counter_' . $counter . '= ' . $display_array . ';</script>';
+                                ?>
+                                <button onclick="show_display_array( 'Audit Log Viewer', <?php echo 'dashboard_counter_' . $counter; ?> )">Viewer</button>
+                                <?php
+
                             } else {
                                 echo $value;
                             }
+
                             ?>
                     </td>
-                        <?php } ?>
-                    <td align="center"><button>Viewer</button></td>
+                        <?php
+                        }
+                        ?>
                 </tr>
-                    <?php }
+                <?php
+
+                // Increment counter
+                $counter++;
+                // List check counter for 100
+                if ( $counter == 100 ) break;
+                }
             } ?>
 
 
         </tbody>
     </table>
 </div>
+
+
 
 <!-- Leave blank for spacing -->
 <div class="wrapper"></div>

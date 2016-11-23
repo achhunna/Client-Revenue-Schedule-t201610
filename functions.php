@@ -11,6 +11,7 @@ require_once( '../../wordpress/wp-includes/wp-db.php' );
 
 // header( 'Content-Type: text/plain' ); // for CSV reading demo
 
+
 /*
     Define variables
 */
@@ -18,7 +19,8 @@ require_once( '../../wordpress/wp-includes/wp-db.php' );
 // For Dashboard
 $current_month = date( 'm' );
 
-
+// Set default time zone
+date_default_timezone_set( 'America/Los_Angeles' );
 
 // Return month number to month name
 function month_number( $monthNum ) {
@@ -44,7 +46,7 @@ $tables = array(
             'name'   =>    'acctg_invoice_clients',
             'fields' => array(
                 'acctg_invoice_clients_meta_id' => array(
-                    'type'  => 'integer',
+                    'type'  => 'numeric',
                     'wpdb'  => '%d',
                     'write' => false
                 ),
@@ -70,7 +72,7 @@ $tables = array(
         'name'   =>    'acctg_invoice_clients_key_dates',
         'fields' => array(
             'acctg_invoice_clients_key_dates_id' => array(
-                'type'  => 'integer',
+                'type'  => 'numeric',
                 'wpdb'  => '%d',
                 'write' => false
             ),
@@ -80,19 +82,22 @@ $tables = array(
                 'write' => true
             ),
             'date_deal_done' => array(
-                'type'  => 'string',
-                'wpdb'  => '%s',
-                'write' => true
+                'type'    => 'date',
+                'wpdb'    => '%s',
+                'format'  => 'Y-m-d',
+                'write'   => true
             ),
             'date_effective' => array(
-                'type'  => 'string',
-                'wpdb'  => '%s',
-                'write' => true
+                'type'    => 'date',
+                'wpdb'    => '%s',
+                'format'  => 'Y-m-d',
+                'write'   => true
             ),
             'date_term' => array(
-                'type'  => 'string',
-                'wpdb'  => '%s',
-                'write' => true
+                'type'    => 'date',
+                'wpdb'    => '%s',
+                'format'  => 'Y-m-d',
+                'write'   => true
             )
         )
     ),
@@ -100,7 +105,7 @@ $tables = array(
         'name'   =>    'acctg_invoice_client_schedules',
         'fields' => array(
             'acctg_invoice_client_schedules_id' => array(
-                'type'  => 'integer',
+                'type'  => 'numeric',
                 'wpdb'  => '%d',
                 'write' => false
             ),
@@ -110,9 +115,10 @@ $tables = array(
                 'write' => true
             ),
             'date_only' => array(
-                'type'  => 'string',
-                'wpdb'  => '%s',
-                'write' => true
+                'type'    => 'date',
+                'wpdb'    => '%s',
+                'format'  => 'Y-m-d',
+                'write'   => true
             ),
             'transaction_note' => array(
                 'type'  => 'string',
@@ -130,7 +136,7 @@ $tables = array(
                 'write' => true
             ),
             'transaction_value' => array(
-                'type'  => 'double',
+                'type'  => 'numeric',
                 'wpdb'  => '%f',
                 'write' => true
             )
@@ -140,7 +146,7 @@ $tables = array(
         'name'   =>    'acctg_change_log',
         'fields' => array(
             'log_id' => array(
-                'type'  => 'integer',
+                'type'  => 'numeric',
                 'wpdb'  => '%d',
                 'write' => false
             ),
@@ -160,14 +166,15 @@ $tables = array(
                 'write' => true
             ),
             'reference_id' => array(
-                'type'  => 'integer',
+                'type'  => 'numeric',
                 'wpdb'  => '%d',
                 'write' => true
             ),
             'log_date' => array(
-                'type'  => 'string',
-                'wpdb'  => '%s',
-                'write' => false
+                'type'   => 'date',
+                'wpdb'   => '%s',
+                'format' => 'Y-m-d H:i:s',
+                'write'  => false
             ),
             'change_type' => array(
                 'type'  => 'string',
@@ -193,6 +200,134 @@ $tables = array(
     )
 );
 
+/*
+    Helper functions
+*/
+
+// Function to validate user input
+function validate_user_input( $table_name, $user_input ) {
+
+	foreach ( $user_input as $field => $value ) {
+
+		if ( field_exists( $table_name, $field ) ) {
+
+			if ( is_correct_type( $table_name, $field, $value) ) {
+				//echo "Correct: {$field} - {$value}\n";
+			} else {
+				//echo "ERROR: VALUE NOT CORRECT FOR TYPE: {$field} - {$value}\n";
+                return false;
+			}
+		} else {
+			//echo "ERROR: FIELD NOT EXIST {$field}\n";
+            return false;
+		}
+	}
+    // if all entries are correct, return true
+    return true;
+}
+
+// Check input type for validation
+function is_correct_type( $table_name, $field_name, $field_value) {
+
+	global $tables;
+
+	// string
+	if ( $tables[ $table_name ]['fields'][ $field_name ]['type'] == 'string' ) {
+
+		if ( is_string( $field_value ) ) {
+			return true;
+		} else {
+			return false;
+		}
+
+	}
+
+
+	// date
+	 if ( $tables[ $table_name ]['fields'][ $field_name ]['type'] == 'date' ) {
+
+		//echo $tables[$table_name]['fields'][$field_name]['format'];
+
+            if ( is_valid_date( $field_value, $tables[ $table_name ]['fields'][ $field_name ]['format'] ) ) {
+                return true;
+            } else {
+                return false;
+            }
+
+        }
+
+
+	// numeric
+	if ( $tables[ $table_name ]['fields'][ $field_name ]['type'] == 'numeric' ) {
+
+            if ( is_numeric( $field_value ) ) {
+                return true;
+            } else {
+                return false;
+            }
+
+        }
+
+
+}
+
+// Check date format
+function is_valid_date( $date, $format ) {
+
+    $d = DateTime::createFromFormat( $format, $date );
+    return $d && $d -> format( $format ) == $date;
+
+}
+
+// Check if field exists in table
+function field_exists( $table_name, $field_name ) {
+
+	global $tables;
+
+	if ( is_array( $tables[ $table_name ]['fields'][ $field_name ] ) ) {
+		return true;
+	} else {
+		return false;
+	}
+
+}
+
+// Check if table exists
+function tn( $table_name ) {
+
+	global $tables;
+
+	if ( isset( $tables[ $table_name ]['name']  ) ) {
+		return $tables[ $table_name ]['name'];
+    }
+
+}
+
+// Validate table and fields
+function validate_table_fields( $table, $fields ) {
+    // Check if table exists or fields is '*'
+    if ( !tn( $table ) ) {
+        return false;
+    } else if ( $fields == '*' ) {
+        return true;
+    }
+
+    // Check each field in table to prevent SQL injection
+    $fields_check = false;
+    $fields_array = explode( ', ', $fields );
+
+    foreach ( $fields_array as $fields_value ) {
+
+        if ( field_exists( $table, $fields_value ) ) {
+            $fields_check = true;
+        } else {
+            $fields_check = false;
+            break;
+        }
+    }
+
+    return $fields_check;
+}
 
 
 // Declare as global
@@ -204,32 +339,48 @@ global $client_table, $client_deals_table, $client_id;
 */
 // Select query using client_id
 function select_query_client( $client_id, $fields, $table ) {
+
     global $wpdb;
 
-    // Escaping single quote to avoid sql injection
-    $fields = addslashes( $fields );
+    $results = false;
 
-    $results = $wpdb->get_results( $wpdb->prepare (
-            "
-                SELECT $fields
-                FROM $table
-                WHERE client_id = %s
-            ",
-            $client_id
-    ) );
+    if ( validate_table_fields( $table, $fields ) ) {
+
+        $results = $wpdb->get_results( $wpdb->prepare (
+                "
+                    SELECT $fields
+                    FROM   $table
+                    WHERE  client_id = %s
+                ",
+                $client_id
+        ) );
+
+    }
 
     return $results;
 }
 
+// Select query to retrieve Client name
+function select_query_client_name( $client_id, $table ) {
+
+    global $wpdb;
+
+    $results = select_query_client( $client_id, 'meta_key, meta_value', tn( $table ) );
+
+    // Parse meta_key and meta_value into original array to extract name
+    return parse_client_meta( $results[0] )['name'];
+}
+
 // Select query using mc_user_id
 function select_query_user( $mc_user_id ) {
+
     global $wpdb;
 
     $results = $wpdb->get_var( $wpdb->prepare (
             "
                 SELECT display_name
-                FROM $wpdb->users
-                WHERE ID = %s
+                FROM   $wpdb->users
+                WHERE  ID = %s
             ",
             $mc_user_id
     ) );
@@ -241,33 +392,246 @@ function select_query_user( $mc_user_id ) {
 function select_query_log( $fields, $table ) {
     global $wpdb;
 
-    // Escaping single quote to avoid sql injection
-    $fields = addslashes( $fields );
+    $results = false;
 
-    $results = $wpdb->get_results(
-            "
-                SELECT     $fields
-                FROM       $table
-                INNER JOIN $wpdb->users
-                           ON $wpdb->users.ID = $table.mc_user_id
-            "
-    );
+    if ( validate_table_fields( $table, $fields ) ) {
+        // Update mc_user_id with display_name
+        $fields = substr( $fields, 0, strrpos( $fields, ',' ) ) . ', display_name';
+
+        $results = $wpdb->get_results(
+                "
+                    SELECT     $fields
+                    FROM       $table
+                    INNER JOIN $wpdb->users
+                               ON $wpdb->users.ID = $table.mc_user_id
+                "
+        );
+
+    }
 
     return $results;
 }
+
+// Select query for change log with sort
+function select_query_log_sort( $fields, $table, $sort_field, $sort_order ) {
+
+    global $wpdb;
+
+    $results = false;
+
+    // $sort_order is asc or desc
+
+    if ( validate_table_fields( $table, $fields ) && validate_table_fields( $table, $sort_field ) ) {
+        // Replace mc_user_id with display_name
+        $fields = str_replace( 'mc_user_id', 'display_name', $fields );
+
+        $results = $wpdb->get_results(
+                "
+                    SELECT     $fields
+                    FROM       $table
+                    INNER JOIN $wpdb->users
+                               ON $wpdb->users.ID = $table.mc_user_id
+                    ORDER BY   $sort_field $sort_order
+                "
+        );
+
+    }
+
+    return $results;
+}
+
+// Select query for change log by log_id
+function select_query_log_id( $fields, $table, $log_id ) {
+
+    global $wpdb;
+
+    $results = false;
+
+    if ( validate_table_fields( $table, $fields ) ) {
+        $results = $wpdb->get_results( $wpdb->prepare (
+                "
+                    SELECT $fields
+                    FROM   $table
+                    WHERE  log_id = %d
+                ",
+                $log_id
+        ) );
+    }
+
+    return $results;
+
+}
+
+// Select query for schedule id
+function select_query_schedule_id( $schedule_id, $fields, $table ) {
+
+    global $wpdb;
+
+    $results = false;
+
+    if ( validate_table_fields( $table, $fields ) ) {
+
+        $results = $wpdb->get_results( $wpdb->prepare (
+                "
+                    SELECT $fields
+                    FROM   $table
+                    WHERE  acctg_invoice_client_schedules_id = %d
+                ",
+                $schedule_id
+        ) );
+
+    }
+
+    return $results;
+}
+
+// Select query for fields without criteria
+function select_query_no_criteria( $fields, $table ) {
+
+    global $wpdb;
+    $results = false;
+
+    if ( validate_table_fields( $table, $fields ) ) {
+
+        $results = $wpdb->get_results( $wpdb->prepare (
+                "
+                    SELECT $fields
+                    FROM   $table
+                    WHERE  %s
+                ",
+                '1'
+        ) );
+
+    }
+
+    return $results;
+}
+
+// Get client id from client name
+function get_client_id( $client_name, $table ) {
+
+    $client_id_results = select_query_no_criteria( 'client_id', $table );
+    $meta_results = select_query_no_criteria( 'meta_key, meta_value', $table );
+
+    $id_array = array();
+    $name_array = array();
+
+    foreach ( $client_id_results as $item ) {
+        array_push( $id_array, $item->client_id );
+    }
+
+    foreach ( $meta_results as $item ) {
+        array_push( $name_array, parse_client_meta( $item )['name'] );
+    }
+
+    $return_array = array_combine( $name_array, $id_array );
+
+    return $return_array[ $client_name ];
+}
+
 
 // wpdb insert function
 function insert_new_record( $table, $input_array, $format_array ) {
 
     global $wpdb;
 
-    $wpdb->insert( $table, $input_array, $format_array );
-    // Return count of numbers of rows updated
-    return $wpdb->insert_id;
+    // Validate user input
+    if ( validate_user_input( $table, $input_array ) ) {
+
+        $wpdb->insert( tn( $table ), $input_array, $format_array );
+        // Return count of numbers of rows updated
+        return array( 'id' => $wpdb->insert_id );
+
+    }
 }
+
+// Determine field changes to update
+function track_field_change( $where, $table, $input_array ) {
+
+    if ( is_array( $where ) ) {
+        if ( key( $where ) == 'client_id' ) {
+            // If client id
+            $old_values = select_query_client( current( $where ), '*', $table );
+        } else {
+            // Else schedule id
+            $old_values = select_query_schedule_id( current( $where ), '*', $table );
+        }
+    }
+
+    $new_input_array = array();
+
+    if ( $old_values ) {
+        // Define start of array
+        $position = 0;
+
+        foreach ( $old_values[0] as $key => $value ) {
+
+            if ( !empty( $input_array[ $key ] ) && $input_array[ $key ] != $value ) {
+                // Define position in array to update old value
+                $new_input_array = array_merge( $new_input_array, array( 'old' => array( $position - 1 => $value ) ) );
+                // Define key in array to update new value
+                $new_input_array = array_merge( $new_input_array, array( 'new' => array( $key => $input_array[ $key ] ) ) );
+                //return $input_array;
+
+            }
+            $position += 1;
+        }
+        return $new_input_array;
+    }
+    return false;
+
+}
+
+// wpdb update function
+function update_record( $table, $input_array, $where, $format_array, $format_where ) {
+
+    global $wpdb;
+
+    // Validate user input and where field used to update data
+    if ( validate_user_input( $table, $input_array ) && validate_user_input( $table, $where ) ) {
+
+        // Update input array with fields changed
+        $new_input_array = track_field_change( $where, $table, $input_array );
+
+        if ( !empty( $new_input_array ) ) {
+            $wpdb->update( tn( $table ), $new_input_array['new'], $where, $format_array, $format_where );
+            if ( empty( $wpdb->insert_id ) ) {
+                $return_id = current( $where );
+            } else {
+                $return_id = $wpdb->insert_id;
+            }
+
+            // Return count of numbers of rows updated
+            return array( 'id' => $return_id, 'old' => $new_input_array['old'] );
+        }
+    }
+
+}
+
+// Function to determine update or insert
+function determine_insert_update( $client_id, $input_array, $format_array, $table ) {
+    // Check if client_id exists
+    if ( select_query_client( $client_id, 'client_id', $table ) ) {
+
+        $where = array(
+            'client_id' => $client_id
+        );
+        $format_where = array(
+            '%s'
+        );
+        // Update client_table
+        return update_record( $table, $input_array, $where, $format_array, $format_where );
+
+    } else {
+
+        return insert_new_record( $table, $input_array, $format_array );
+    }
+}
+
 
 // Insert query for client_table
 function insert_query_client( $client_id, $meta_key, $meta_value ) {
+
     global $wpdb, $client_table;
     $table = $client_table;
     /*
@@ -296,11 +660,14 @@ function insert_query_client( $client_id, $meta_key, $meta_value ) {
         '%s'
     );
 
-    return insert_new_record( $table, $input_array, $format_array );
+    // Insert or update, based on client id
+    return determine_insert_update( $client_id, $input_array, $format_array, $table );
+
 }
 
 // Insert query for client_deals_table
 function insert_query_client_deals( $client_id, $date_deal, $date_effective, $date_term ) {
+
     global $wpdb, $client_deals_table;
     $table = $client_deals_table;
 
@@ -338,6 +705,7 @@ function insert_query_client_deals( $client_id, $date_deal, $date_effective, $da
 
 // Insert query for schedule_table
 function insert_query_schedule( $client_id, $date, $note, $product_variation, $type, $value ) {
+
     global $wpdb, $schedule_table;
     $table = $schedule_table;
 
@@ -416,6 +784,11 @@ function log_change( $mc_user_id, $source, $table_change, $reference_id, $change
     ) );
     */
 
+    // Check for empty old value
+    if ( empty ( $old_value ) ) {
+        $old_value = '';
+    }
+
     $input_array = array(
         'mc_user_id' => $mc_user_id,
         'source' => $source,
@@ -444,6 +817,7 @@ function log_change( $mc_user_id, $source, $table_change, $reference_id, $change
 
 // Select query for last reference_id
 function last_reference_id( $table ) {
+
     global $wpdb, $client_table, $client_deals_table, $schedule_table;
 
     // Determine reference_id based on table
@@ -474,25 +848,59 @@ function last_reference_id( $table ) {
 
 
 // CSV log change function
-function csv_log_change( $mc_user_id, $table_name, $reference_id, $csv_array ) {
+function csv_log_change( $mc_user_id, $table_name, $reference_id, $old_array, $new_array ) {
+
     global $tables;
 
     $j = 0;
+
+    if ( empty( $old_array ) ) {
+        $update_type = 'add';
+    } else {
+        $update_type = 'update';
+    }
 
     foreach ( $tables[ $table_name ]['fields'] as $key => $value ) {
 
         // Check if write is true for field
         if ( $value['write'] ) {
 
-
             // Log changes
-            log_change( $mc_user_id, 'csv', $table_name, $reference_id, 'add', $key, '', $csv_array[ $j ] );
+            log_change( $mc_user_id, 'csv', $table_name, $reference_id, $update_type, $key, $old_array[ $j ], $new_array[ $j ] );
             $j += 1;
         }
 
     }
 
 }
+
+// Clear database, for demo purpose
+function delete_all() {
+    global $wpdb, $tables;
+
+    foreach ( $tables as $key => $value ) {
+        // Delete all rows
+        $wpdb->query(
+                $wpdb->prepare(
+                    "
+                    DELETE from $key
+                    WHERE 1
+                    "
+                    )
+            );
+        // Reset auto Increment
+        $wpdb->query(
+                $wpdb->prepare(
+                    "
+                    ALTER TABLE $key
+                    AUTO_INCREMENT = 1
+                    "
+                    )
+        );
+
+    }
+}
+
 
 
 /*
@@ -512,6 +920,7 @@ function read_csv( $file ) {
 
 // Parse into meta_key and meta_value for client_table
 function parse_meta_client( $csv_array, $table_name ) {
+
     global $client_table;
 
     // Parse if client_table
@@ -601,39 +1010,5 @@ function set_cookie( $user ) {
     setcookie( 'tally_user_id', $user->ID, time() + (86400 * 30), "/"); // 86400 = 1 day
 }
 
-
-/*
-Early work
-// get_results
-
-$sql = $wpdb->escape( "SELECT * FROM wp_options WHERE option_id = 1" );
-$results = $wpdb->get_results( $sql, OBJECT );
-
-foreach ( $results as $key => $value ) {
-    // Convert to JSON to print
-    echo json_encode( $value );
-}
-
-echo '<br>';
-echo "\n\t";
-
-// get_var
-
-$user = 'tally-admin';
-$results = $wpdb->get_var( $wpdb->prepare (
-        "
-            SELECT COUNT(*)
-            FROM $wpdb->users
-            WHERE user_login = %s
-        ", $user
-        ) );
-
-if ( $results ) {
-    echo 'tally-admin is a user <br>';
-}
-
-
-echo "\n\t";
-*/
 
 ?>

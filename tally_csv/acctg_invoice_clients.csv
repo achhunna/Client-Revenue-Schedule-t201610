@@ -4,3 +4,5 @@ client_id,name,sf_link,email
 325,Microsoft,https://salesforce.com/microsoft,contact@microsoft.com
 456,Wired,https://salesforce.com/wired,contact@wired.com
 567,Wirecutter,https://salesforce.com/wirecutter,contact@wirecutter.com
+100,Washington Post,https://salesforce.com/wp,contact@wp.com
+101,Engadget,https://salesforce.com/engadget,contact@engadget.com

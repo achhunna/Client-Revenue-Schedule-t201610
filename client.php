@@ -1,11 +1,10 @@
 
 <div class="wrapper">
     <div class="input_box client_box" contenteditable>Search Clients</div>
-    <button>Search</button>
-    <button onclick="update();">Update</button>
-    <button>Add</button>
+    <button onclick="update_client()">Search</button>
     <button>Delete</button>
 </div>
+<span id="error"></span>
 
 <div class="wrapper" id="client_info">
 
@@ -26,8 +25,7 @@
         foreach ( $output_array as $key => $value ) { ?>
     <div class="input_section">
         <span class="input_heading"><?php echo ucfirst( $key ); ?></span>
-        <div class="input_box"  id="<?php echo $key; ?>" contenteditable><?php echo $value; ?></div>
-        <span id="error"></span>
+        <div class="input_box" id="<?php echo $key; ?>"><?php echo $value; ?></div>
     </div>
         <?php }
     }
@@ -73,7 +71,8 @@
                 <?php
                 // acctg_invoice_client_schedules table query
 
-                $results = select_query_client( $client_id, 'date_only, transaction_type, transaction_product_variation, transaction_value, transaction_note', $schedule_table );
+                $results = select_query_client( $client_id, 'date_only, transaction_type, transaction_product_variation, transaction_value, transaction_note, acctg_invoice_client_schedules_id', $schedule_table );
+                $counter = 0;
 
                 if ( $results ) {
                     foreach ( $results as $row) {
@@ -82,18 +81,28 @@
                         <?php
                         foreach ( $row as $key => $value ) {
                         ?>
-                    <td contenteditable>
+                    <td>
                             <?php
                             // Number format for $ value
                             if ( $key == 'transaction_value' ) {
                                 echo number_format( $value, 2 );
+                            } else if ( $key == 'acctg_invoice_client_schedules_id' ) {
+                                $display_array = json_encode( $row );
+                                //echo $array_pass;
+                                echo '<script>var client_counter_' . $counter . '= ' . $display_array . ';</script>';
+                            ?>
+                                <button onclick="show_display_array( 'Client Edit', <?php echo 'client_counter_' . $counter; ?> )">Edit</button>
+                            <?php
                             } else {
                                 echo $value;
                             }
                             ?>
                     </td>
-                        <?php } ?>
-                    <td align="center"><button>Edit</button></td>
+                        <?php
+                        $counter++;
+                        }
+                        ?>
+
                 </tr>
                     <?php }
                 } ?>
@@ -101,7 +110,6 @@
         </tbody>
     </table>
 </div>
-
 
 <!-- Leave blank for spacing -->
 <div class="wrapper"></div>

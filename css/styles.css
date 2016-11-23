@@ -92,7 +92,7 @@ a.menu_link {
     font-weight: bold;
 }
 a.menu_link:hover {
-    text-decoration: underline;
+    text-decoration: underline !important;
 }
 
 
@@ -154,8 +154,6 @@ button:active {
 table.list {
     border-spacing: 0px;
     overflow-x: auto;
-    margin: 0 auto;
-    width: 90%;
     min-width: 500px;
     table-layout: fixed;
     border-collapse: collapse;
@@ -163,11 +161,13 @@ table.list {
 th {
     background-color: #aaa;
     padding: 10px;
+    word-wrap: break-word;
     //border: 1px solid;
 }
 td {
     padding: 5px;
     border: 1px solid;
+    word-wrap: break-word;
 }
 .clear {
     background-color: transparent;
@@ -182,6 +182,39 @@ td {
 tr.no_border td {
     border: none;
     height: 20px;
+}
+
+/* Overlay */
+.overlay {
+    height: 100%;
+    width: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    left: 0;
+    top: 0;
+    z-index: 1002;
+    position: fixed;
+}
+.wrapper.audit_box {
+
+    width: 450px;
+    height: 350px;
+	background-color: #fff;
+
+    position: absolute;
+	top:0;
+	bottom: 0;
+	left: 0;
+	right: 0;
+
+	margin: auto;
+    padding: 20px;
+
+}
+.title {
+    font-weight: bold;
+}
+.right {
+    float: right;
 }
 
 /* footer */

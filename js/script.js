@@ -31,14 +31,16 @@ function file_supported() {
 }
 
 // Update client_id query
-function update() {
-    client_id = $('#client_id').html();
+function update_client() {
+
+    // Get client name
+    client_name = $( '.client_box' ).text();
 
     // Ajax call to update client
     $.ajax({
         type: 'post',
         url: 'ajax.php',
-        data: '&action=update_client&client_id=' + client_id,
+        data: '&action=update_client&client_name=' + client_name,
         cache:  false,
         success: function( data ) {
 
@@ -62,6 +64,8 @@ function update_dom( data ) {
         var parse_obj_data = $.parseJSON( parse_obj[ property ] );
         // Create placeholder to join tags
         var placeholder = '';
+        var counter = 0;
+        var client_counter_ = [];
 
         // Route property to correct section
         if( property === 'client_schedule' ) {
@@ -72,24 +76,40 @@ function update_dom( data ) {
                 for ( item in parse_obj_data[ rows ] ) {
                     var td_content = parse_obj_data[ rows ][ item ];
                     // Append each value into table
-                    if ( item === 'transaction_value' ) {
-                        td_content = number_format( td_content );
+                    if ( item != 'acctg_invoice_client_schedules_id' ) {
+                        if ( item === 'transaction_value' ) {
+                            td_content = number_format( td_content );
+                        }
+                        placeholder += '<td>' + td_content + '</td>';
                     }
-                    placeholder += '<td contenteditable>' + td_content + '</td>';
+
                 }
 
-                placeholder += '<td align="center"><button>Edit</button></td></tr>';
+                client_counter_[ counter ] = parse_obj_data[ rows ];
 
+                placeholder += '<td><button id="client_button_' + counter + '">Edit</button></td></tr>';
+
+                counter += 1;
             }
 
             // Update schedule_table text with complete string
             $( '#schedule_table' ).html( placeholder );
 
+            // Add click event to buttons
+            for ( var i = 0; i <= counter; i++ ) {
+                // Event listner in a closure
+                ( function(i) {
+                    $( '#client_button_' + i ).click( function() {
+                        show_display_array( 'Client Edit', client_counter_[i] );
+                    });
+                })(i);
+            }
+
         } else {
 
             for ( rows in parse_obj_data ) {
                 //console.log( 'info: ' + rows + ': ' + parse_obj_data[ rows ] );
-                placeholder += '<div class="input_section"><span class="input_heading">' + ucfirst( rows ) + '</span><div class="input_box" id="' + rows + '" contenteditable>' +  parse_obj_data[ rows ] + '</div><span id="error"></span></div>';
+                placeholder += '<div class="input_section"><span class="input_heading">' + ucfirst( rows ) + ' </span><div class="input_box" id="' + rows + '">' +  parse_obj_data[ rows ] + '</div><span id="error"></span></div>';
             }
 
             // Update client_info text with complete string
@@ -184,7 +204,6 @@ function reset_csv_upload() {
     $( '#csv_output' ).html('');
 }
 
-
 // Post CSV file
 function post_csv_upload() {
 
@@ -194,10 +213,122 @@ function post_csv_upload() {
         url: 'ajax.php',
         data: { 'action': 'parse_csv', 'table_name': table_name, 'csv_array': csv_array },
         success: function( data ) {
-            // Refresh page
-            location.reload();
+            if ( data ) {
+                // Refresh page
+                location.reload();
+                //console.log( data );
+            }
         }
     });
+}
+
+// Update schedule
+function update_schedule( key_string ) {
+    // Split string into array
+    var key_array = key_string.split(',');
+    // Create update array object
+    var update_array = {};
+
+    var table_name = 'acctg_invoice_client_schedules';
+
+    // Gather update data
+    for ( var key in key_array ) {
+        //console.log( $( '#' + key_array[ key ] ).text() );
+        update_array[ key_array[ key ] ] = $( '#' + key_array[ key ] ).text();
+    }
+
+
+    // Ajax call to update schedule
+    $.ajax({
+        type: 'post',
+        url: 'ajax.php',
+        data: { 'action': 'update_schedule', 'table_name': table_name, 'update_array': update_array },
+        success: function( data ) {
+            if ( data ) {
+                // Refresh page
+                //location.reload();
+                console.log( data );
+                // Update client table
+                update_client();
+            }
+        }
+    });
+
+    // Toggle overlay
+    toggle_overlay();
+
+
+}
+
+// Delete all function
+function delete_all() {
+
+    if ( confirm( 'Are you sure you want to delete?' ) ) {
+
+        // Ajax call to delete all
+        $.ajax({
+            type: 'post',
+            url: 'ajax.php',
+            data: 'action=delete_all',
+            success: function( data ) {
+                // Refresh page
+                location.reload();
+            }
+        });
+    }
+}
+
+
+// Hide overlay div
+function toggle_overlay() {
+    $( '.overlay' ).toggle();
+}
+
+// Show display array content
+function show_display_array( title, display_array ) {
+    // Call toggle overlay
+    toggle_overlay();
+
+    $( '.title' ).html( title );
+
+    var parse_display_array = display_array;
+
+    var placeholder = '';
+    var key_array = [];
+
+    for ( var key in parse_display_array ) {
+
+        //console.log( key + ': ' + parse_display_array[ key ] );
+        placeholder += '<div class="input_section">';
+
+        if ( title == 'Audit Log Viewer' ) {
+            placeholder += '<span class="input_heading">' + key + '</span><div class="input_box" id="' + key + '">' + parse_display_array[ key ] + '</div>';
+        } else {
+            if ( key != 'acctg_invoice_client_schedules_id' ) {
+                placeholder += '<span class="input_heading">' + key + '</span><div class="input_box"  id="' + key + '"contenteditable>' + parse_display_array[ key ] + '</div>';
+            } else {
+                placeholder += '<div class="input_box" id="' + key + '">' + parse_display_array[ key ] + '</div>';
+            }
+        }
+        placeholder += '</div>';
+
+        // Append to key array
+        key_array.push( key );
+
+    }
+
+    if ( title == 'Client Edit') {
+
+        // Create update button and pass array
+        placeholder += '<button onclick="update_schedule( \'' + key_array +'\' )">Update</button>';
+
+    }
+
+    // Update div with placeholder
+    $( '#overlay_box' ).html( placeholder );
+    // Hide schedule id div
+    $( '#acctg_invoice_client_schedules_id').hide();
+
 }
 
 // Delete cookie
@@ -210,7 +341,7 @@ function delete_cookie( cookie_name ) {
 // Document ready
 $( document ).ready( function() {
 
-    // Load default div
+    // Load default div partial
     switch_partial( 'dashboard' );
 
 
@@ -227,6 +358,17 @@ $( document ).ready( function() {
     // Hide CSV output container
     $( '#csv_output_container' ).hide();
 
+    /* Overlay callback functions */
+    // Hide overlay div
+    $( '.overlay' ).hide();
+
+    $( '.overlay' ).click( function (e) {
+        $( this ).hide();
+    } )
+
+    $( '.audit_box' ).click( function (e) {
+        return false;
+    } )
 
     /*
     // Underline clicked menu

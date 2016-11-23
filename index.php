@@ -10,8 +10,9 @@ if ( ! isset( $_COOKIE['tally_user_id'] ) ) {
     header( 'Location: login.php' );
     exit();
 } else {
-    // assign user logged in to mc_user_id variable
+    // Assign user logged in to mc_user_id variable
     $mc_user_id = $_COOKIE['tally_user_id'];
+
 }
 
 ?>
@@ -23,6 +24,7 @@ if ( ! isset( $_COOKIE['tally_user_id'] ) ) {
 </div>
 -->
 <?php
+
 // Load functions
 include( 'functions.php' );
 
@@ -47,6 +49,7 @@ if ( is_null( $wpdb) ) {
         <a href="#" id="dashboard_link" class="menu_link" onclick="switch_partial( 'dashboard' )">Dashboard</a>
         <a href="#" id="client_detail_link" class="menu_link" onclick="switch_partial( 'client_detail' )">Client Detail</a>
         <a href="#" id="csv_upload_link" class="menu_link" onclick="switch_partial( 'csv_upload' )">Upload CSV</a>
+        <button onclick="delete_all()">Delete All</button>
     </div>
 
 
@@ -70,6 +73,15 @@ if ( is_null( $wpdb) ) {
         <h2>Upload CSV</h2>
 
         <?php include( 'csv.php' ) ?>
+    </div>
+
+    <div class="overlay">
+        <div class="wrapper audit_box">
+            <span class="title"></span>
+            <button class="right" onclick="toggle_overlay()">X</button>
+            <div id="overlay_box">
+            </div>
+        </div>
     </div>
 
 <?php include( 'footer.php' ); ?>
