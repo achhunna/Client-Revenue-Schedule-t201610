@@ -2,7 +2,8 @@
 <div class="wrapper">
     <div class="input_box client_box" contenteditable>Search Clients</div>
     <button onclick="update_client()">Search</button>
-    <button>Delete</button>
+    <button onclick="delete_client()">Delete</button>
+    <button onclick="delete_all()">Delete All</button>
 </div>
 <span id="error"></span>
 
@@ -25,7 +26,7 @@
         foreach ( $output_array as $key => $value ) { ?>
     <div class="input_section">
         <span class="input_heading"><?php echo ucfirst( $key ); ?></span>
-        <div class="input_box" id="<?php echo $key; ?>"><?php echo $value; ?></div>
+        <div class="input_box no_edit" id="<?php echo $key; ?>"><?php echo $value; ?></div>
     </div>
         <?php }
     }
@@ -44,7 +45,7 @@
         foreach ( $results[0] as $key => $value ) { ?>
         <div class="input_section">
             <span class="input_heading"><?php echo ucfirst( $key ); ?></span>
-            <div class="input_box" id="<?php echo $key; ?>"><?php echo $value; ?></div>
+            <div class="input_box no_edit" id="<?php echo $key; ?>"><?php echo $value; ?></div>
         </div>
         <?php }
     } ?>
@@ -91,7 +92,7 @@
                                 //echo $array_pass;
                                 echo '<script>var client_counter_' . $counter . '= ' . $display_array . ';</script>';
                             ?>
-                                <button onclick="show_display_array( 'Client Edit', <?php echo 'client_counter_' . $counter; ?> )">Edit</button>
+                                <button class="button_center" onclick="show_display_array( 'Client Edit', <?php echo 'client_counter_' . $counter; ?> )">Edit</button>
                             <?php
                             } else {
                                 echo $value;

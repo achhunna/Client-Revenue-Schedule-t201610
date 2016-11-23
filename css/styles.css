@@ -98,7 +98,7 @@ a.menu_link:hover {
 
 /* input sections */
 .input_section {
-    padding: 10px;
+    padding: 5px;
 }
 .input_heading {
     padding-left: 10px;
@@ -123,10 +123,13 @@ a.menu_link:hover {
 .input_box.client_box {
     width: 200px;
 }
+.input_box.no_edit{
+    color: #000;
+}
 button {
     padding: 5px 10px 5px 10px;
     margin-left: 10px; /* space between buttons */
-    background-color: #bbb;
+    background-color: #aaa;
     border-radius: 12px;
     font-size: 12px;
     border: none;
@@ -144,6 +147,10 @@ button:active {
     background-color: #ddd;
     color: #aaa;
 }
+.button_center {
+    margin: 0 auto;
+    display: block;
+}
 #error {
     color: #f00;
     padding-left: 10px;
@@ -160,13 +167,13 @@ table.list {
 }
 th {
     background-color: #aaa;
-    padding: 10px;
+    padding: 5px;
     word-wrap: break-word;
-    //border: 1px solid;
+    border: 1px solid #aaa;
 }
 td {
     padding: 5px;
-    border: 1px solid;
+    border: 1px solid #aaa;
     word-wrap: break-word;
 }
 .clear {
@@ -197,7 +204,7 @@ tr.no_border td {
 .wrapper.audit_box {
 
     width: 450px;
-    height: 350px;
+    height: 300px;
 	background-color: #fff;
 
     position: absolute;
@@ -207,8 +214,15 @@ tr.no_border td {
 	right: 0;
 
 	margin: auto;
-    padding: 20px;
+    padding: 0px;
 
+}
+.title_box {
+    background-color: #aaa;
+    line-height: 25px;
+    padding: 5px;
+    padding-left: 10px;
+    padding-right: 10px;
 }
 .title {
     font-weight: bold;

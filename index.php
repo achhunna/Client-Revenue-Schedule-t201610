@@ -49,7 +49,7 @@ if ( is_null( $wpdb) ) {
         <a href="#" id="dashboard_link" class="menu_link" onclick="switch_partial( 'dashboard' )">Dashboard</a>
         <a href="#" id="client_detail_link" class="menu_link" onclick="switch_partial( 'client_detail' )">Client Detail</a>
         <a href="#" id="csv_upload_link" class="menu_link" onclick="switch_partial( 'csv_upload' )">Upload CSV</a>
-        <button onclick="delete_all()">Delete All</button>
+
     </div>
 
 
@@ -77,8 +77,10 @@ if ( is_null( $wpdb) ) {
 
     <div class="overlay">
         <div class="wrapper audit_box">
-            <span class="title"></span>
-            <button class="right" onclick="toggle_overlay()">X</button>
+            <div class="title_box">
+                <span class="title"></span>
+                <button class="right" onclick="toggle_overlay()">X</button>
+            </div>
             <div id="overlay_box">
             </div>
         </div>

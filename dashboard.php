@@ -164,7 +164,7 @@
                                 $display_array = json_encode( select_query_log_id( 'log_date, table_change, change_type, field_change, old_value, new_value', $change_log_table, $log_id )[0] );
                                 echo '<script>var dashboard_counter_' . $counter . '= ' . $display_array . ';</script>';
                                 ?>
-                                <button onclick="show_display_array( 'Audit Log Viewer', <?php echo 'dashboard_counter_' . $counter; ?> )">Viewer</button>
+                                <button class="button_center" onclick="show_display_array( 'Audit Log Viewer', <?php echo 'dashboard_counter_' . $counter; ?> )">Viewer</button>
                                 <?php
 
                             } else {

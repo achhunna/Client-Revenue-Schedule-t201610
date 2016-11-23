@@ -5,6 +5,9 @@ include( 'functions.php' );
 // Define POST variables
 $action = $_POST['action'];
 
+// Get mc_user_id from cookie
+$mc_user_id = $_COOKIE['tally_user_id'];
+
 // Check if action is update
 if ( $action == 'update_client' ) {
 
@@ -61,9 +64,6 @@ if ( $action == 'update_client' ) {
 
     $csv_array_pre = $_POST['csv_array'];
 
-    // Get mc_user_id from cookie
-    $mc_user_id = $_COOKIE['tally_user_id'];
-
     // Parse into meta_key and meta_value for client_table
     $csv_array = parse_meta_client( $csv_array_pre, $table_name );
 
@@ -94,7 +94,7 @@ if ( $action == 'update_client' ) {
             */
 
             // Make update to log table
-            csv_log_change( $mc_user_id, $table_name, $return_array['id'], $return_array['old'], $csv_array[ $i ] );
+            update_log_change( $mc_user_id, 'csv', $table_name, $return_array['id'], $return_array['old'], $csv_array[ $i ] );
 
         }
 
@@ -106,15 +106,11 @@ if ( $action == 'update_client' ) {
     $table_name = $_POST['table_name'];
     $update_array = $_POST['update_array'];
 
-    // Get mc_user_id from cookie
-    $mc_user_id = $_COOKIE['tally_user_id'];
 
     $schedule_id = 'acctg_invoice_client_schedules_id';
 
     foreach ( $update_array as $key => $value ) {
-
         //echo $key . ": " . $value . "\n";
-
     }
 
 
@@ -137,10 +133,25 @@ if ( $action == 'update_client' ) {
 
     $return_array = update_record( $table_name, $update_array, $where, $format_array, $format_where );
 
-    print_r( $return_array );
+    //print_r( $return_array );
 
     // Make update to log table
-    //csv_log_change( $mc_user_id, $table_name, $return_array['id'], $return_array['old'], $csv_array[ $i ] );
+    update_log_change( $mc_user_id, 'app', $table_name, $return_array['id'], $return_array['old'], $update_array );
+
+    return true;
+
+} elseif ( $action == 'delete_client' ) {
+
+    $client_id = $_POST['client_id'];
+
+    foreach ( $tables as $key => $value ) {
+        if ( $key != 'acctg_change_log' ) {
+            // Delete query
+            delete_query_client_id( $client_id, $key );
+        }
+    }
+
+    // Make update to log Table
 
 
 } elseif ( $action == 'delete_all' ) {

@@ -558,24 +558,27 @@ function track_field_change( $where, $table, $input_array ) {
         }
     }
 
-    $new_input_array = array();
-
     if ( $old_values ) {
         // Define start of array
         $position = 0;
+        $old_array = array();
+        $new_array = array();
 
         foreach ( $old_values[0] as $key => $value ) {
 
             if ( !empty( $input_array[ $key ] ) && $input_array[ $key ] != $value ) {
                 // Define position in array to update old value
-                $new_input_array = array_merge( $new_input_array, array( 'old' => array( $position - 1 => $value ) ) );
+                $old_array[ $position - 1 ] = $value;
                 // Define key in array to update new value
-                $new_input_array = array_merge( $new_input_array, array( 'new' => array( $key => $input_array[ $key ] ) ) );
+                $new_array[ $key ] = $input_array[ $key ];
                 //return $input_array;
-
             }
             $position += 1;
         }
+
+        $new_input_array = array_merge( array( 'old' => $old_array ), array( 'new' => $new_array ) );
+
+        //print_r( $new_input_array );
         return $new_input_array;
     }
     return false;
@@ -847,8 +850,8 @@ function last_reference_id( $table ) {
 }
 
 
-// CSV log change function
-function csv_log_change( $mc_user_id, $table_name, $reference_id, $old_array, $new_array ) {
+// Update log change function
+function update_log_change( $mc_user_id, $source, $table_name, $reference_id, $old_array, $new_array ) {
 
     global $tables;
 
@@ -866,13 +869,24 @@ function csv_log_change( $mc_user_id, $table_name, $reference_id, $old_array, $n
         if ( $value['write'] ) {
 
             // Log changes
-            log_change( $mc_user_id, 'csv', $table_name, $reference_id, $update_type, $key, $old_array[ $j ], $new_array[ $j ] );
+            log_change( $mc_user_id, $source, $table_name, $reference_id, $update_type, $key, $old_array[ $j ], $new_array[ $j ] );
             $j += 1;
         }
 
     }
 
 }
+
+
+// Delete records by client id
+function delete_query_client_id( $client_id, $table ) {
+
+    global $wpdb;
+
+    $wpdb->delete( tn( $table ), array( 'client_id' => $client_id ) );
+
+}
+
 
 // Clear database, for demo purpose
 function delete_all() {

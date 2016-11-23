@@ -36,6 +36,11 @@ function update_client() {
     // Get client name
     client_name = $( '.client_box' ).text();
 
+    // If update is not called from search box
+    if ( client_name === 'Search Clients' ) {
+        client_name = $( '#name' ).text();
+    }
+
     // Ajax call to update client
     $.ajax({
         type: 'post',
@@ -46,6 +51,10 @@ function update_client() {
 
             if( !data ) {
                 $( '#error' ).html('Not Found');
+                // Remove error after 1 secs
+                setTimeout( function() {
+                    $( '#error' ).html('');
+                }, 1000);
             } else {
                 update_dom( data );
             }
@@ -87,7 +96,7 @@ function update_dom( data ) {
 
                 client_counter_[ counter ] = parse_obj_data[ rows ];
 
-                placeholder += '<td><button id="client_button_' + counter + '">Edit</button></td></tr>';
+                placeholder += '<td><button class="button_center" id="client_button_' + counter + '">Edit</button></td></tr>';
 
                 counter += 1;
             }
@@ -98,9 +107,9 @@ function update_dom( data ) {
             // Add click event to buttons
             for ( var i = 0; i <= counter; i++ ) {
                 // Event listner in a closure
-                ( function(i) {
+                ( function( i ) {
                     $( '#client_button_' + i ).click( function() {
-                        show_display_array( 'Client Edit', client_counter_[i] );
+                        show_display_array( 'Client Edit', client_counter_[ i ] );
                     });
                 })(i);
             }
@@ -109,7 +118,7 @@ function update_dom( data ) {
 
             for ( rows in parse_obj_data ) {
                 //console.log( 'info: ' + rows + ': ' + parse_obj_data[ rows ] );
-                placeholder += '<div class="input_section"><span class="input_heading">' + ucfirst( rows ) + ' </span><div class="input_box" id="' + rows + '">' +  parse_obj_data[ rows ] + '</div><span id="error"></span></div>';
+                placeholder += '<div class="input_section"><span class="input_heading">' + ucfirst( rows ) + ' </span><div class="input_box no_edit" id="' + rows + '">' +  parse_obj_data[ rows ] + '</div><span id="error"></span></div>';
             }
 
             // Update client_info text with complete string
@@ -237,33 +246,50 @@ function update_schedule( key_string ) {
         update_array[ key_array[ key ] ] = $( '#' + key_array[ key ] ).text();
     }
 
-
     // Ajax call to update schedule
     $.ajax({
         type: 'post',
         url: 'ajax.php',
         data: { 'action': 'update_schedule', 'table_name': table_name, 'update_array': update_array },
         success: function( data ) {
-            if ( data ) {
-                // Refresh page
-                //location.reload();
-                console.log( data );
-                // Update client table
-                update_client();
-            }
+            //console.log( data );
+            // Update client table
+            update_client();
+        },
+        error: function( jqXHR, textStatus, errorThrown ) {
+            console.log( errorThrown );
         }
     });
 
     // Toggle overlay
     toggle_overlay();
 
+}
 
+// Delete client by id
+function delete_client() {
+
+    if ( confirm( 'Do you want to delete the client?' ) ) {
+        // Get client id
+        client_id = $( '#client_id' ).html();
+        // Ajax call to delete all
+        $.ajax({
+            type: 'post',
+            url: 'ajax.php',
+            data: 'action=delete_client&client_id=' + client_id,
+            success: function( data ) {
+                // Refresh page
+                location.reload();
+            }
+        });
+
+    }
 }
 
 // Delete all function
 function delete_all() {
 
-    if ( confirm( 'Are you sure you want to delete?' ) ) {
+    if ( confirm( 'Delete all records?' ) ) {
 
         // Ajax call to delete all
         $.ajax({
@@ -302,12 +328,12 @@ function show_display_array( title, display_array ) {
         placeholder += '<div class="input_section">';
 
         if ( title == 'Audit Log Viewer' ) {
-            placeholder += '<span class="input_heading">' + key + '</span><div class="input_box" id="' + key + '">' + parse_display_array[ key ] + '</div>';
+            placeholder += '<span class="input_heading">' + ucfirst( key ) + '</span><div class="input_box no_edit" id="' + key + '">' + parse_display_array[ key ] + '</div>';
         } else {
             if ( key != 'acctg_invoice_client_schedules_id' ) {
-                placeholder += '<span class="input_heading">' + key + '</span><div class="input_box"  id="' + key + '"contenteditable>' + parse_display_array[ key ] + '</div>';
+                placeholder += '<span class="input_heading">' + ucfirst( key ) + '</span><div class="input_box"  id="' + key + '"contenteditable>' + parse_display_array[ key ] + '</div>';
             } else {
-                placeholder += '<div class="input_box" id="' + key + '">' + parse_display_array[ key ] + '</div>';
+                placeholder += '<div class="input_box no_edit" id="' + key + '">' + parse_display_array[ key ] + '</div>';
             }
         }
         placeholder += '</div>';
@@ -318,9 +344,8 @@ function show_display_array( title, display_array ) {
     }
 
     if ( title == 'Client Edit') {
-
         // Create update button and pass array
-        placeholder += '<button onclick="update_schedule( \'' + key_array +'\' )">Update</button>';
+        placeholder += '<button class="button_center" onclick="update_schedule( \'' + key_array +'\' )">Update</button>';
 
     }
 
@@ -338,12 +363,17 @@ function delete_cookie( cookie_name ) {
 }
 
 
-// Document ready
+/*
+    Ready function loaded when DOM loaded
+*/
 $( document ).ready( function() {
+
+    // Define variables
+    var csv_array = '';
+    var table_name = '';
 
     // Load default div partial
     switch_partial( 'dashboard' );
-
 
     // Client search box
     $( '.client_box' ).click( function() {
@@ -354,6 +384,22 @@ $( document ).ready( function() {
             $( this ).html( 'Search Clients' );
         }
     } )
+    $( '.client_box' ).keydown( function( e ) {
+        // trap return key
+        if ( e.keyCode === 13 ) {
+            update_client();
+            $( this ).html( 'Search Clients' );
+            return false;
+        }
+    })
+
+    // trap return key on all input boxes
+    $( '.input_box' ).keydown( function( e ) {
+        if ( e.keyCode === 13 ) {
+            $( this ).blur();
+            return false;
+        }
+    })
 
     // Hide CSV output container
     $( '#csv_output_container' ).hide();
@@ -369,23 +415,5 @@ $( document ).ready( function() {
     $( '.audit_box' ).click( function (e) {
         return false;
     } )
-
-    /*
-    // Underline clicked menu
-    $( 'a' ).click( function() {
-        $( 'a' ).css( 'text-decoration', 'none' );
-        $( this ).css( 'text-decoration', 'underline' );
-    } )
-    */
-
-    // AjaxForm to bind 'csv_form' to callback function, when it is used
-    /*
-    $( '#csv_form' ).ajaxForm( function () {
-        alert( 'test' );
-    } );
-    */
-
-    var csv_array = '';
-    var table_name = '';
 
 })
