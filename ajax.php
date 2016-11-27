@@ -47,19 +47,6 @@ if ( $action == 'update_client' ) {
 
 } elseif ( $action == 'parse_csv' ) {
 
-    /*
-    $file_url = $_POST['url'];
-
-    $filename  = substr( $file_url, strrpos( $file_url, '\\' ) + 1, strrpos( $file_url, '.' ) );
-    $table_name  = substr( $filename, 0, strrpos( $filename, '.' ) );
-
-
-    $file_handle = fopen( $file_url, 'r' );
-    /*
-    // Parse into meta_key and meta_value for client_table
-    $csv_array   = parse_meta_client( read_csv( $file_handle ), $table_name );
-    */
-
     $table_name = $_POST['table_name'];
 
     $csv_array_pre = $_POST['csv_array'];
@@ -87,15 +74,9 @@ if ( $action == 'update_client' ) {
 
                     break;
                 }
-            /*
-            if ( !empty( $return_array['old'] ) ) {
-                var_dump( $csv_array[ $i ], $return_array['old'] );
-            }
-            */
 
             // Make update to log table
             update_log_change( $mc_user_id, 'csv', $table_name, $return_array['id'], $return_array['old'], $csv_array[ $i ] );
-
         }
 
     }
@@ -112,7 +93,6 @@ if ( $action == 'update_client' ) {
     foreach ( $update_array as $key => $value ) {
         //echo $key . ": " . $value . "\n";
     }
-
 
     $where = array(
         $schedule_id => $update_array[ $schedule_id ]
@@ -133,10 +113,8 @@ if ( $action == 'update_client' ) {
 
     $return_array = update_record( $table_name, $update_array, $where, $format_array, $format_where );
 
-    //print_r( $return_array );
-
     // Make update to log table
-    update_log_change( $mc_user_id, 'app', $table_name, $return_array['id'], $return_array['old'], $update_array );
+    update_log_change( $mc_user_id, 'app', $table_name, $return_array['id'], $return_array['old'], $return_array['new'] );
 
     return true;
 
@@ -144,20 +122,30 @@ if ( $action == 'update_client' ) {
 
     $client_id = $_POST['client_id'];
 
-    foreach ( $tables as $key => $value ) {
-        if ( $key != 'acctg_change_log' ) {
+    foreach ( $tables as $table_name => $table_value ) {
+        if ( $table_name != 'acctg_change_log' ) {
             // Delete query
-            delete_query_client_id( $client_id, $key );
+            $deleted = delete_query_client_id( $client_id, $table_name );
+            // Make update to log Table
+            foreach ( $deleted as $item ) {
+                // Set up counter
+                $i = 0;
+                foreach ( $item as $key => $value ) {
+                    // Get first column
+                    if ( $i == 0 ) {
+                        $reference_id = $value;
+                    } else {
+                        log_change( $mc_user_id, 'app', $table_name, $reference_id, 'delete', $key, $value, '' );
+                    }
+                    $i++;
+                }
+            }
         }
     }
 
-    // Make update to log Table
-
-
 } elseif ( $action == 'delete_all' ) {
-
+    // Use for test purpose only
     delete_all();
-
 }
 
 ?>

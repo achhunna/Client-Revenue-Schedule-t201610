@@ -563,23 +563,33 @@ function track_field_change( $where, $table, $input_array ) {
         $position = 0;
         $old_array = array();
         $new_array = array();
+        $new_array_field = array();
 
         foreach ( $old_values[0] as $key => $value ) {
 
             if ( !empty( $input_array[ $key ] ) && $input_array[ $key ] != $value ) {
                 // Define position in array to update old value
                 $old_array[ $position - 1 ] = $value;
+                $new_array[ $position - 1 ] = $input_array[ $key ];
                 // Define key in array to update new value
-                $new_array[ $key ] = $input_array[ $key ];
+                $new_array_field[ $key ] = $input_array[ $key ];
                 //return $input_array;
             }
-            $position += 1;
+            $position++;
         }
 
-        $new_input_array = array_merge( array( 'old' => $old_array ), array( 'new' => $new_array ) );
+        // If any of the arrays are empty
+        if ( empty( $old_array ) || empty( $new_array ) || empty( $new_array_field ) ) {
+            echo "Empty \n";
+            return false;
+        } else {
+            $new_input_array = array_merge( array( 'old' => $old_array ), array( 'new' => $new_array ), array( 'new_field' => $new_array_field ) );
 
-        //print_r( $new_input_array );
-        return $new_input_array;
+            echo 'track field change ';
+            print_r( $new_input_array );
+            // Returns $new_input_array as empty
+            return $new_input_array;
+        }
     }
     return false;
 
@@ -597,21 +607,24 @@ function update_record( $table, $input_array, $where, $format_array, $format_whe
         $new_input_array = track_field_change( $where, $table, $input_array );
 
         if ( !empty( $new_input_array ) ) {
-            $wpdb->update( tn( $table ), $new_input_array['new'], $where, $format_array, $format_where );
+            $wpdb->update( tn( $table ), $new_input_array['new_field'], $where, $format_array, $format_where );
             if ( empty( $wpdb->insert_id ) ) {
                 $return_id = current( $where );
             } else {
                 $return_id = $wpdb->insert_id;
             }
-
+            echo 'Update record to send: ' . $return_id . ', ';
+            print_r( $new_input_array['old'] );
+            echo ', ';
+            print_r( $new_input_array['new'] );
             // Return count of numbers of rows updated
-            return array( 'id' => $return_id, 'old' => $new_input_array['old'] );
+            return array( 'id' => $return_id, 'old' => $new_input_array['old'], 'new' => $new_input_array['new'] );
         }
     }
 
 }
 
-// Function to determine update or insert
+// Function to determine update or insert record
 function determine_insert_update( $client_id, $input_array, $format_array, $table ) {
     // Check if client_id exists
     if ( select_query_client( $client_id, 'client_id', $table ) ) {
@@ -626,7 +639,6 @@ function determine_insert_update( $client_id, $input_array, $format_array, $tabl
         return update_record( $table, $input_array, $where, $format_array, $format_where );
 
     } else {
-
         return insert_new_record( $table, $input_array, $format_array );
     }
 }
@@ -863,18 +875,23 @@ function update_log_change( $mc_user_id, $source, $table_name, $reference_id, $o
         $update_type = 'update';
     }
 
-    foreach ( $tables[ $table_name ]['fields'] as $key => $value ) {
+    if ( !empty( $reference_id ) ) {
+        foreach ( $tables[ $table_name ]['fields'] as $key => $value ) {
+            // Change field write property if updating with old array
+            if ( $update_type == 'update' && empty( $old_array[ $j ] ) ) {
+                $value['write'] = false;
+                $j++;
+            }
 
-        // Check if write is true for field
-        if ( $value['write'] ) {
+            // Check if write is true for field
+            if ( $value['write'] ) {
+                // Log changes
+                log_change( $mc_user_id, $source, $table_name, $reference_id, $update_type, $key, $old_array[ $j ], $new_array[ $j ] );
+                $j++;
+            }
 
-            // Log changes
-            log_change( $mc_user_id, $source, $table_name, $reference_id, $update_type, $key, $old_array[ $j ], $new_array[ $j ] );
-            $j += 1;
         }
-
     }
-
 }
 
 
@@ -883,12 +900,16 @@ function delete_query_client_id( $client_id, $table ) {
 
     global $wpdb;
 
+    // Query items to be deleted
+    $deleted = select_query_client( $client_id, '*', $table );
+
     $wpdb->delete( tn( $table ), array( 'client_id' => $client_id ) );
 
+    return $deleted;
 }
 
 
-// Clear database, for demo purpose
+// Clear database, for test purpose only
 function delete_all() {
     global $wpdb, $tables;
 

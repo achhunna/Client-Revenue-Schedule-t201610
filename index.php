@@ -79,7 +79,7 @@ if ( is_null( $wpdb) ) {
         <div class="wrapper audit_box">
             <div class="title_box">
                 <span class="title"></span>
-                <button class="right" onclick="toggle_overlay()">X</button>
+                <button class="right" onclick="toggle_overlay()">&#x2715;</button>
             </div>
             <div id="overlay_box">
             </div>

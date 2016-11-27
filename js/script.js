@@ -91,7 +91,6 @@ function update_dom( data ) {
                         }
                         placeholder += '<td>' + td_content + '</td>';
                     }
-
                 }
 
                 client_counter_[ counter ] = parse_obj_data[ rows ];
@@ -117,7 +116,6 @@ function update_dom( data ) {
         } else {
 
             for ( rows in parse_obj_data ) {
-                //console.log( 'info: ' + rows + ': ' + parse_obj_data[ rows ] );
                 placeholder += '<div class="input_section"><span class="input_heading">' + ucfirst( rows ) + ' </span><div class="input_box no_edit" id="' + rows + '">' +  parse_obj_data[ rows ] + '</div><span id="error"></span></div>';
             }
 
@@ -280,6 +278,7 @@ function delete_client() {
             success: function( data ) {
                 // Refresh page
                 location.reload();
+                //console.log( data );
             }
         });
 
