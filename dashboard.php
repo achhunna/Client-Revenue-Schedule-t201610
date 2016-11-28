@@ -136,7 +136,7 @@
 
             <?php
             // Query with desc sort option
-            $results = select_query_log_sort( 'log_date, change_type, table_change, mc_user_id, log_id', $change_log_table, 'log_id', 'desc' );
+            $results = select_query_log_sort( 'log_date, change_type, table_change, reference_id, mc_user_id, log_id', $change_log_table, 'log_id', 'desc' );
             $counter = 0;
             $log_id = 0;
 
@@ -148,6 +148,11 @@
                 <tr>
                         <?php
                         foreach ( $row as $key => $value ) {
+                            if ( $key == 'table_change' ) {
+                                // Store table value
+                                $table = $value;
+                                continue;
+                            }
                         ?>
                     <td>
                             <?php
@@ -167,6 +172,14 @@
                                 <button class="button_center" onclick="show_display_array( 'Audit Log Viewer', <?php echo 'dashboard_counter_' . $counter; ?> )">Viewer</button>
                                 <?php
 
+                            } else if ( $key == 'reference_id' ) {
+                                // Get client name
+                                // Store reference_id
+                                $reference_id = $value;
+
+                                $client_id = json_decode( json_encode( select_query_table_id( $reference_id, 'client_id', $table )[0] ), true )[ 'client_id' ];
+
+                                echo select_query_client_name( $client_id, $client_table );
                             } else {
                                 echo $value;
                             }

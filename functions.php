@@ -413,11 +413,11 @@ function select_query_log( $fields, $table ) {
 // Select query for change log with sort
 function select_query_log_sort( $fields, $table, $sort_field, $sort_order ) {
 
-    global $wpdb;
+    global $wpdb, $tables;
 
     $results = false;
 
-    // $sort_order is asc or desc
+    // $sort_order is for asc or desc
 
     if ( validate_table_fields( $table, $fields ) && validate_table_fields( $table, $sort_field ) ) {
         // Replace mc_user_id with display_name
@@ -429,12 +429,11 @@ function select_query_log_sort( $fields, $table, $sort_field, $sort_order ) {
                     FROM       $table
                     INNER JOIN $wpdb->users
                                ON $wpdb->users.ID = $table.mc_user_id
+
                     ORDER BY   $sort_field $sort_order
                 "
         );
-
     }
-
     return $results;
 }
 
@@ -461,11 +460,14 @@ function select_query_log_id( $fields, $table, $log_id ) {
 }
 
 // Select query for schedule id
-function select_query_schedule_id( $schedule_id, $fields, $table ) {
+function select_query_table_id( $schedule_id, $fields, $table ) {
 
-    global $wpdb;
+    global $wpdb, $tables;
 
     $results = false;
+
+    // Get the first key from array for id
+    $id = key( $tables[ $table ]['fields'] );
 
     if ( validate_table_fields( $table, $fields ) ) {
 
@@ -473,7 +475,7 @@ function select_query_schedule_id( $schedule_id, $fields, $table ) {
                 "
                     SELECT $fields
                     FROM   $table
-                    WHERE  acctg_invoice_client_schedules_id = %d
+                    WHERE  $id = %d
                 ",
                 $schedule_id
         ) );
@@ -549,7 +551,7 @@ function track_field_change( $where, $table, $input_array ) {
             $old_values = select_query_client( current( $where ), '*', $table );
         } else {
             // Else schedule id
-            $old_values = select_query_schedule_id( current( $where ), '*', $table );
+            $old_values = select_query_table_id( current( $where ), '*', $table );
         }
     }
 
