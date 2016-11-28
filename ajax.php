@@ -4,7 +4,6 @@ include( 'functions.php' );
 
 // Define POST variables
 $action = $_POST['action'];
-
 // Get mc_user_id from cookie
 $mc_user_id = $_COOKIE['tally_user_id'];
 
@@ -12,9 +11,7 @@ $mc_user_id = $_COOKIE['tally_user_id'];
 if ( $action == 'update_client' ) {
 
     $client_name = $_POST['client_name'];
-
     $client_id = get_client_id( $client_name, $client_table );
-
     // Query client_table
     $client_results = select_query_client( $client_id, 'meta_key, meta_value', $client_table );
 
@@ -86,8 +83,6 @@ if ( $action == 'update_client' ) {
 
     $table_name = $_POST['table_name'];
     $update_array = $_POST['update_array'];
-
-
     $schedule_id = 'acctg_invoice_client_schedules_id';
 
     foreach ( $update_array as $key => $value ) {
@@ -112,7 +107,6 @@ if ( $action == 'update_client' ) {
     );
 
     $return_array = update_record( $table_name, $update_array, $where, $format_array, $format_where );
-
     // Make update to log table
     update_log_change( $mc_user_id, 'app', $table_name, $return_array['id'], $return_array['old'], $return_array['new'] );
 
@@ -142,6 +136,20 @@ if ( $action == 'update_client' ) {
             }
         }
     }
+
+} elseif ( $action == 'autocomplete' ) {
+
+    /*
+    $name_array = array();
+    $meta_results = select_query_no_criteria( 'meta_key, meta_value', $client_table );
+
+    foreach ( $meta_results as $item ) {
+        array_push( $name_array, parse_client_meta( $item )['name'] );
+    }
+
+    echo json_encode( $name_array );
+    */
+
 
 } elseif ( $action == 'delete_all' ) {
     // Use for test purpose only

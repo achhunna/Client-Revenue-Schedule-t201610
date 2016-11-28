@@ -14,7 +14,6 @@ function switch_partial( selection ) {
     $( '.partial' ).hide();
     // Show selection div based on id
     $( '#' + selection ).show();
-
     // Hide all underline
     $( '.menu_link' ).css( 'text-decoration', 'none' );
     // Underline selected text
@@ -35,12 +34,10 @@ function update_client() {
 
     // Get client name
     client_name = $( '.client_box' ).text();
-
     // If update is not called from search box
     if ( client_name === 'Search Clients' ) {
         client_name = $( '#name' ).text();
     }
-
     // Ajax call to update client
     $.ajax({
         type: 'post',
@@ -48,7 +45,6 @@ function update_client() {
         data: '&action=update_client&client_name=' + client_name,
         cache:  false,
         success: function( data ) {
-
             if( !data ) {
                 $( '#error' ).html('Not Found');
                 // Remove error after 1 secs
@@ -68,7 +64,6 @@ function update_dom( data ) {
     var parse_obj = $.parseJSON( data );
     // Iterate through parse_data object to update DOM
     for ( property in parse_obj ) {
-
         // Parse string inside into JSON object
         var parse_obj_data = $.parseJSON( parse_obj[ property ] );
         // Create placeholder to join tags
@@ -102,7 +97,6 @@ function update_dom( data ) {
 
             // Update schedule_table text with complete string
             $( '#schedule_table' ).html( placeholder );
-
             // Add click event to buttons
             for ( var i = 0; i <= counter; i++ ) {
                 // Event listner in a closure
@@ -118,7 +112,6 @@ function update_dom( data ) {
             for ( rows in parse_obj_data ) {
                 placeholder += '<div class="input_section"><span class="input_heading">' + ucfirst( rows ) + ' </span><div class="input_box no_edit" id="' + rows + '">' +  parse_obj_data[ rows ] + '</div><span id="error"></span></div>';
             }
-
             // Update client_info text with complete string
             $( '#' + property ).html( placeholder );
         }
@@ -142,7 +135,6 @@ function upload_csv() {
             var csv_file = $( 'input#csv_file' ).prop( 'files' )[0];
             var reader = new FileReader();
 
-
             // HTML5 FileReader to display CSV file
             reader.readAsText( csv_file );
             // Get filename
@@ -158,7 +150,6 @@ function upload_csv() {
 
                     var heading = '<thead>';
                     var body = '<tbody>';
-
                     // Update div with csv_array
                     for ( key in csv_array ) {
 
@@ -185,7 +176,6 @@ function upload_csv() {
 
                     // Append head and body to table
                     $( '#csv_output' ).append( heading + body );
-
                     // Unhide CSV output container
                     $( '#csv_output_container' ).show();
                 }
@@ -196,7 +186,6 @@ function upload_csv() {
             };
 
         }
-
         // Reset input file
         $( '#csv_file' ).replaceWith( $( '#csv_file' ).val( '' ).clone( true ) );
     }
@@ -204,7 +193,6 @@ function upload_csv() {
 
 // Cancel CSV upload
 function reset_csv_upload() {
-
     // Hide CSV output container
     $( '#csv_output_container' ).hide();
     // Remove csv output div
@@ -213,7 +201,6 @@ function reset_csv_upload() {
 
 // Post CSV file
 function post_csv_upload() {
-
     // Ajax call to upload CSV
     $.ajax({
         type: 'post',
@@ -237,13 +224,11 @@ function update_schedule( key_string ) {
     var update_array = {};
 
     var table_name = 'acctg_invoice_client_schedules';
-
     // Gather update data
     for ( var key in key_array ) {
         //console.log( $( '#' + key_array[ key ] ).text() );
         update_array[ key_array[ key ] ] = $( '#' + key_array[ key ] ).text();
     }
-
     // Ajax call to update schedule
     $.ajax({
         type: 'post',
@@ -258,7 +243,6 @@ function update_schedule( key_string ) {
             console.log( errorThrown );
         }
     });
-
     // Toggle overlay
     toggle_overlay();
 
@@ -289,7 +273,6 @@ function delete_client() {
 function delete_all() {
 
     if ( confirm( 'Delete all records?' ) ) {
-
         // Ajax call to delete all
         $.ajax({
             type: 'post',
@@ -322,7 +305,6 @@ function show_display_array( title, display_array ) {
     var key_array = [];
 
     for ( var key in parse_display_array ) {
-
         //console.log( key + ': ' + parse_display_array[ key ] );
         placeholder += '<div class="input_section">';
 
@@ -336,7 +318,6 @@ function show_display_array( title, display_array ) {
             }
         }
         placeholder += '</div>';
-
         // Append to key array
         key_array.push( key );
 
@@ -347,7 +328,6 @@ function show_display_array( title, display_array ) {
         placeholder += '<button class="button_center" onclick="update_schedule( \'' + key_array +'\' )">Update</button>';
 
     }
-
     // Update div with placeholder
     $( '#overlay_box' ).html( placeholder );
     // Hide schedule id div
@@ -370,19 +350,20 @@ $( document ).ready( function() {
     // Define variables
     var csv_array = '';
     var table_name = '';
-
     // Load default div partial
     switch_partial( 'dashboard' );
 
     // Client search box
     $( '.client_box' ).click( function() {
         $( this ).html( '' );
-    } )
+
+
+    } );
     $( '.client_box' ).focusout( function() {
         if ( $( this ).html() == '' ) {
             $( this ).html( 'Search Clients' );
         }
-    } )
+    } );
     $( '.client_box' ).keydown( function( e ) {
         // trap return key
         if ( e.keyCode === 13 ) {
@@ -390,7 +371,13 @@ $( document ).ready( function() {
             $( this ).html( 'Search Clients' );
             return false;
         }
-    })
+    } );
+    // Autocomplete client box for names
+    $( '.client_box' ).autocomplete( {
+        source: 'autocomplete.php',
+        //source: client_names,
+        minLength: 1,
+    } );
 
     // trap return key on all input boxes
     $( '.input_box' ).keydown( function( e ) {
@@ -398,7 +385,7 @@ $( document ).ready( function() {
             $( this ).blur();
             return false;
         }
-    })
+    } )
 
     // Hide CSV output container
     $( '#csv_output_container' ).hide();
@@ -409,10 +396,10 @@ $( document ).ready( function() {
 
     $( '.overlay' ).click( function (e) {
         $( this ).hide();
-    } )
+    } );
 
     $( '.audit_box' ).click( function (e) {
         return false;
-    } )
+    } );
 
 })

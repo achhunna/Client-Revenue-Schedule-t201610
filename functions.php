@@ -4,13 +4,11 @@
 error_reporting( E_ALL );
 ini_set( "display_errors", 1 );
 
-
 // Load WordPress files
 require_once( '../../wordpress/wp-load.php' );
 require_once( '../../wordpress/wp-includes/wp-db.php' );
 
 // header( 'Content-Type: text/plain' ); // for CSV reading demo
-
 
 /*
     Define variables
@@ -503,7 +501,6 @@ function select_query_no_criteria( $fields, $table ) {
         ) );
 
     }
-
     return $results;
 }
 
@@ -525,10 +522,8 @@ function get_client_id( $client_name, $table ) {
     }
 
     $return_array = array_combine( $name_array, $id_array );
-
     return $return_array[ $client_name ];
 }
-
 
 // wpdb insert function
 function insert_new_record( $table, $input_array, $format_array ) {
@@ -643,26 +638,11 @@ function determine_insert_update( $client_id, $input_array, $format_array, $tabl
     }
 }
 
-
 // Insert query for client_table
 function insert_query_client( $client_id, $meta_key, $meta_value ) {
 
     global $wpdb, $client_table;
     $table = $client_table;
-    /*
-    $wpdb->query( $wpdb->prepare (
-            "
-                INSERT INTO $table
-                ( client_id, meta_key, meta_value )
-                VALUES ( %s, %s, %s )
-            ",
-            array(
-                $client_id,
-                $meta_key,
-                $meta_value
-            )
-    ) );
-    */
 
     $input_array = array(
         'client_id' => $client_id,
@@ -686,22 +666,6 @@ function insert_query_client_deals( $client_id, $date_deal, $date_effective, $da
     global $wpdb, $client_deals_table;
     $table = $client_deals_table;
 
-    /*
-    $wpdb->query( $wpdb->prepare (
-            "
-                INSERT INTO $table
-                ( client_id, date_deal_done, date_effective, date_term )
-                VALUES ( %s, %s, %s, %s )
-            ",
-            array(
-                $client_id,
-                $date_deal,
-                $date_effective,
-                $date_term
-            )
-    ) );
-    */
-
     $input_array = array(
         'client_id' => $client_id,
         'date_deal_done' => $date_deal,
@@ -724,24 +688,6 @@ function insert_query_schedule( $client_id, $date, $note, $product_variation, $t
     global $wpdb, $schedule_table;
     $table = $schedule_table;
 
-    /*
-    $wpdb->query( $wpdb->prepare (
-            "
-                INSERT INTO $table
-                ( client_id, date_only, transaction_note, transaction_product_variation, transaction_type, transaction_value )
-                VALUES ( %s, %s, %s, %s, %s, %f )
-            ",
-            array(
-                $client_id,
-                $date,
-                $note,
-                $product_variation,
-                $type,
-                $value
-            )
-    ) );
-    */
-
     $input_array = array(
         'client_id' => $client_id,
         'date_only' => $date,
@@ -763,41 +709,11 @@ function insert_query_schedule( $client_id, $date, $note, $product_variation, $t
 
 }
 
-
 // Log changes
 function log_change( $mc_user_id, $source, $table_change, $reference_id, $change_type, $field_change, $old_value, $new_value ) {
     // source = csv, app; table_change = acctg_invoice_clients, acctg_invoice_clients_key_dates, acctg_invoice_client_schedules
     global $wpdb, $change_log_table;
     $table = $change_log_table;
-
-    /*
-    $reference_id = last_reference_id( $table_change );
-
-    echo 'Reference id: ' . $reference_id . '<br><br>';
-    */
-
-    // Using wpdb generated auto_increment value after insert function
-
-
-    /*
-    $wpdb->query( $wpdb->prepare (
-            "
-                INSERT INTO $table
-                ( mc_user_id, source, table_change, reference_id, change_type, field_change, old_value, new_value )
-                VALUES ( %s, %s, %s, %s, %s, %s, %f, %f )
-            ",
-            array(
-                $mc_user_id,
-                $source,
-                $table_change,
-                $reference_id,
-                $change_type,
-                $field_change,
-                $old_value,
-                $new_value
-            )
-    ) );
-    */
 
     // Check for empty old value
     if ( empty ( $old_value ) ) {
@@ -829,7 +745,6 @@ function log_change( $mc_user_id, $source, $table_change, $reference_id, $change
 
 }
 
-
 // Select query for last reference_id
 function last_reference_id( $table ) {
 
@@ -860,7 +775,6 @@ function last_reference_id( $table ) {
     return $result;
 
 }
-
 
 // Update log change function
 function update_log_change( $mc_user_id, $source, $table_name, $reference_id, $old_array, $new_array ) {
@@ -894,7 +808,6 @@ function update_log_change( $mc_user_id, $source, $table_name, $reference_id, $o
     }
 }
 
-
 // Delete records by client id
 function delete_query_client_id( $client_id, $table ) {
 
@@ -907,7 +820,6 @@ function delete_query_client_id( $client_id, $table ) {
 
     return $deleted;
 }
-
 
 // Clear database, for test purpose only
 function delete_all() {
@@ -935,8 +847,6 @@ function delete_all() {
 
     }
 }
-
-
 
 /*
     CSV functions
@@ -1044,6 +954,5 @@ function wp_tally_login( $username, $password ) {
 function set_cookie( $user ) {
     setcookie( 'tally_user_id', $user->ID, time() + (86400 * 30), "/"); // 86400 = 1 day
 }
-
 
 ?>
