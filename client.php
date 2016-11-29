@@ -1,26 +1,26 @@
+<!-- Client search box -->
 <div class="wrapper">
     <div class="input_box client_box" contenteditable>Search Clients</div>
     <button onclick="update_client()">Search</button>
     <button onclick="delete_client()">Delete</button>
     <button onclick="delete_all()">Delete All</button>
 </div>
+<!-- For displaying search error -->
 <span id="error"></span>
 
+<!-- Client detail output -->
 <div class="wrapper" id="client_info">
-
     <?php
-    // acctg_invoice_clients table query
+    // Query detail from client table
     $results = select_query_client( $client_id, 'meta_key, meta_value', $client_table );
 
     if ( $results ) {
-
         $output = $results[0];
         $output_array = parse_client_meta( $output );
-
         // Insert client_id into output array
         $client_array = array ( 'client_id' => $client_id );
         $output_array = $client_array + $output_array;
-
+        // Output each value
         foreach ( $output_array as $key => $value ) { ?>
     <div class="input_section">
         <span class="input_heading"><?php echo ucfirst( $key ); ?></span>
@@ -33,13 +33,12 @@
 </div>
 
 <div class="wrapper" id="client_deal">
-
     <?php
-    // acctg_invoice_clients_key_dates table query
-
+    // Query detail from client dates table
     $results = select_query_client( $client_id, 'date_deal_done, date_term', $client_deals_table);
 
     if ( $results ) {
+        // Output each value
         foreach ( $results[0] as $key => $value ) { ?>
         <div class="input_section">
             <span class="input_heading"><?php echo ucfirst( $key ); ?></span>
@@ -47,7 +46,6 @@
         </div>
         <?php }
     } ?>
-
 </div>
 
 <div class="wrapper">
@@ -66,10 +64,8 @@
             </tr>
         </thead>
         <tbody id="schedule_table">
-
                 <?php
-                // acctg_invoice_client_schedules table query
-
+                // Query detail from client schedule table
                 $results = select_query_client( $client_id, 'date_only, transaction_type, transaction_product_variation, transaction_value, transaction_note, acctg_invoice_client_schedules_id', $schedule_table );
                 $counter = 0;
 
@@ -78,6 +74,7 @@
                     ?>
                 <tr>
                         <?php
+                        // Output each value
                         foreach ( $row as $key => $value ) {
                         ?>
                     <td>
@@ -87,7 +84,6 @@
                                 echo number_format( $value, 2 );
                             } else if ( $key == 'acctg_invoice_client_schedules_id' ) {
                                 $display_array = json_encode( $row );
-                                //echo $array_pass;
                                 echo '<script>var client_counter_' . $counter . '= ' . $display_array . ';</script>';
                             ?>
                                 <button class="button_center" onclick="show_display_array( 'Client Edit', <?php echo 'client_counter_' . $counter; ?> )">Edit</button>
@@ -101,7 +97,6 @@
                         $counter++;
                         }
                         ?>
-
                 </tr>
                     <?php }
                 } ?>

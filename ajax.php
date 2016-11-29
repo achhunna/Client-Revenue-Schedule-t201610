@@ -1,10 +1,9 @@
 <?php
-
 /**
  *
  *    Ajax actions
  *
-*/
+ */
 
 // Load functions
 include( 'functions.php' );
@@ -83,9 +82,9 @@ if ( $action == 'update_client' ) {
 // Check if action is update schedule for client
 } elseif ( $action == 'update_schedule' ) {
 
-    $table_name = $_POST['table_name'];
+    $table_name   = $_POST['table_name'];
     $update_array = $_POST['update_array'];
-    $schedule_id = 'acctg_invoice_client_schedules_id';
+    $schedule_id  = 'acctg_invoice_client_schedules_id';
 
     $where = array(
         $schedule_id => $update_array[ $schedule_id ]

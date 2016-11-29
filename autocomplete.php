@@ -15,5 +15,4 @@ foreach ( $meta_results as $item ) {
 }
 
 echo json_encode( $name_array );
-
 ?>

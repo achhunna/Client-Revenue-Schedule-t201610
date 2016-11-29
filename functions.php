@@ -1,10 +1,9 @@
 <?php
-
 /**
  *
  *    Functions
  *
-*/
+ */
 
 // Display errors
 error_reporting( E_ALL );
@@ -34,13 +33,16 @@ $change_log_table   = 'acctg_change_log';
 // Default client to load
 $client_id          = 123;
 
+// Declare as global
+global $client_table, $client_deals_table, $client_id;
+
+
 /*
     Table array - All tables have a table structure defined where meta data is included
     about which fields exist, and the prescribed format of the field.
 */
 
 $tables = array(
-
     'acctg_invoice_clients' => array(
             'name'   =>    'acctg_invoice_clients',
             'fields' => array(
@@ -65,7 +67,6 @@ $tables = array(
                     'write' => true
                 )
             )
-
     ),
     'acctg_invoice_clients_key_dates' => array(
         'name'   =>    'acctg_invoice_clients_key_dates',
@@ -241,7 +242,6 @@ function is_correct_type( $table_name, $field_name, $field_value) {
 
 	}
 
-
 	// date
 	 if ( $tables[ $table_name ]['fields'][ $field_name ]['type'] == 'date' ) {
 
@@ -254,7 +254,6 @@ function is_correct_type( $table_name, $field_name, $field_value) {
             }
 
         }
-
 
 	// numeric
 	if ( $tables[ $table_name ]['fields'][ $field_name ]['type'] == 'numeric' ) {
@@ -322,14 +321,8 @@ function validate_table_fields( $table, $fields ) {
             break;
         }
     }
-
     return $fields_check;
 }
-
-
-// Declare as global
-global $client_table, $client_deals_table, $client_id;
-
 
 /*
     MySQL query functions
@@ -353,7 +346,6 @@ function select_query_client( $client_id, $fields, $table ) {
         ) );
 
     }
-
     return $results;
 }
 
@@ -363,7 +355,6 @@ function select_query_client_name( $client_id, $table ) {
     global $wpdb;
 
     $results = select_query_client( $client_id, 'meta_key, meta_value', tn( $table ) );
-
     // Parse meta_key and meta_value into original array to extract name
     return parse_client_meta( $results[0] )['name'];
 }
@@ -381,12 +372,12 @@ function select_query_user( $mc_user_id ) {
             ",
             $mc_user_id
     ) );
-
     return $results;
 }
 
 // Select query for change log
 function select_query_log( $fields, $table ) {
+
     global $wpdb;
 
     $results = false;
@@ -405,7 +396,6 @@ function select_query_log( $fields, $table ) {
         );
 
     }
-
     return $results;
 }
 
@@ -453,9 +443,7 @@ function select_query_log_id( $fields, $table, $log_id ) {
                 $log_id
         ) );
     }
-
     return $results;
-
 }
 
 // Select query for schedule id
@@ -480,7 +468,6 @@ function select_query_table_id( $schedule_id, $fields, $table ) {
         ) );
 
     }
-
     return $results;
 }
 
@@ -537,7 +524,6 @@ function insert_new_record( $table, $input_array, $format_array ) {
         $wpdb->insert( tn( $table ), $input_array, $format_array );
         // Return count of numbers of rows updated
         return array( 'id' => $wpdb->insert_id );
-
     }
 }
 
@@ -588,7 +574,6 @@ function track_field_change( $where, $table, $input_array ) {
         }
     }
     return false;
-
 }
 
 // wpdb update function
@@ -617,7 +602,6 @@ function update_record( $table, $input_array, $where, $format_array, $format_whe
             return array( 'id' => $return_id, 'old' => $new_input_array['old'], 'new' => $new_input_array['new'] );
         }
     }
-
 }
 
 // Function to determine update or insert record
@@ -646,8 +630,8 @@ function insert_query_client( $client_id, $meta_key, $meta_value ) {
     $table = $client_table;
 
     $input_array = array(
-        'client_id' => $client_id,
-        'meta_key' => $meta_key,
+        'client_id'  => $client_id,
+        'meta_key'   => $meta_key,
         'meta_value' => $meta_value
     );
     $format_array = array(
@@ -655,10 +639,8 @@ function insert_query_client( $client_id, $meta_key, $meta_value ) {
         '%s',
         '%s'
     );
-
     // Insert or update, based on client id
     return determine_insert_update( $client_id, $input_array, $format_array, $table );
-
 }
 
 // Insert query for client_deals_table
@@ -668,10 +650,10 @@ function insert_query_client_deals( $client_id, $date_deal, $date_effective, $da
     $table = $client_deals_table;
 
     $input_array = array(
-        'client_id' => $client_id,
+        'client_id'      => $client_id,
         'date_deal_done' => $date_deal,
         'date_effective' => $date_effective,
-        'date_term' => $date_term
+        'date_term'      => $date_term
     );
     $format_array = array(
         '%s',
@@ -679,7 +661,6 @@ function insert_query_client_deals( $client_id, $date_deal, $date_effective, $da
         '%s',
         '%s'
     );
-
     return insert_new_record( $table, $input_array, $format_array );
 }
 
@@ -690,12 +671,12 @@ function insert_query_schedule( $client_id, $date, $note, $product_variation, $t
     $table = $schedule_table;
 
     $input_array = array(
-        'client_id' => $client_id,
-        'date_only' => $date,
-        'transaction_note' => $note,
+        'client_id'                     => $client_id,
+        'date_only'                     => $date,
+        'transaction_note'              => $note,
         'transaction_product_variation' => $product_variation,
-        'transaction_type' => $type,
-        'transaction_value' => $value
+        'transaction_type'              => $type,
+        'transaction_value'             => $value
     );
     $format_array = array(
         '%s',
@@ -705,9 +686,7 @@ function insert_query_schedule( $client_id, $date, $note, $product_variation, $t
         '%s',
         '%f'
     );
-
     return insert_new_record( $table, $input_array, $format_array );
-
 }
 
 // Log changes
@@ -722,14 +701,14 @@ function log_change( $mc_user_id, $source, $table_change, $reference_id, $change
     }
 
     $input_array = array(
-        'mc_user_id' => $mc_user_id,
-        'source' => $source,
+        'mc_user_id'   => $mc_user_id,
+        'source'       => $source,
         'table_change' => $table_change,
         'reference_id' => $reference_id,
-        'change_type' => $change_type,
+        'change_type'  => $change_type,
         'field_change' => $field_change,
-        'old_value' => $old_value,
-        'new_value' => $new_value
+        'old_value'    => $old_value,
+        'new_value'    => $new_value
     );
     $format_array = array(
         '%s',
@@ -741,9 +720,7 @@ function log_change( $mc_user_id, $source, $table_change, $reference_id, $change
         '%s',
         '%s'
     );
-
     return insert_new_record( $table, $input_array, $format_array );
-
 }
 
 // Select query for last reference_id
@@ -772,9 +749,7 @@ function last_reference_id( $table ) {
                 ORDER BY $reference_id DESC LIMIT 1
             "
     );
-
     return $result;
-
 }
 
 // Update log change function
@@ -831,8 +806,8 @@ function delete_all() {
         $wpdb->query(
                 $wpdb->prepare(
                     "
-                    DELETE from $key
-                    WHERE 1
+                        DELETE from $key
+                        WHERE 1
                     "
                     )
             );
@@ -840,12 +815,11 @@ function delete_all() {
         $wpdb->query(
                 $wpdb->prepare(
                     "
-                    ALTER TABLE $key
-                    AUTO_INCREMENT = 1
+                        ALTER TABLE $key
+                        AUTO_INCREMENT = 1
                     "
                     )
         );
-
     }
 }
 
@@ -860,7 +834,6 @@ function read_csv( $file ) {
     while ( ( $row = fgetcsv( $file, 8192 ) ) !== FALSE ) {
         $rows[] = $row;
     }
-
     return $rows;
 }
 
@@ -903,9 +876,7 @@ function parse_meta_client( $csv_array, $table_name ) {
             }
 
         }
-
         return $return_array;
-
     } else {
         return $csv_array;
     }

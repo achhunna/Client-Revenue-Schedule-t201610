@@ -25,7 +25,7 @@ if ( is_null( $wpdb) ) {
 ?>
 <div class="container">
 
-    <div class="top">
+    <div>
         <div class="heading">Tally</div>
 
         <!-- Display logged in user -->
@@ -68,8 +68,7 @@ if ( is_null( $wpdb) ) {
                 <span class="title"></span>
                 <button class="right" onclick="toggle_overlay()">&#x2715;</button>
             </div>
-            <div id="overlay_box">
-            </div>
+            <div id="overlay_box"></div>
         </div>
     </div>
 

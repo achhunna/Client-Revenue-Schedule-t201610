@@ -1,8 +1,8 @@
 /**
  *
- *    Scripts
+ *    JavaScript functions
  *
-*/
+ */
 
 // Number format function
 function number_format( input ) {
@@ -35,9 +35,14 @@ function file_supported() {
     return isCompatible;
 }
 
+// Delete cookie
+function delete_cookie( cookie_name ) {
+    document.cookie = cookie_name + '=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/';
+    location.reload();
+}
+
 // Update client_id query
 function update_client() {
-
     // Get client name
     client_name = $( '.client_box' ).text();
     // If update is not called from search box
@@ -79,7 +84,6 @@ function update_dom( data ) {
 
         // Route property to correct section
         if( property === 'client_schedule' ) {
-
             for ( rows in parse_obj_data ) {
                 placeholder += '<tr>';
 
@@ -93,14 +97,10 @@ function update_dom( data ) {
                         placeholder += '<td>' + td_content + '</td>';
                     }
                 }
-
                 client_counter_[ counter ] = parse_obj_data[ rows ];
-
                 placeholder += '<td><button class="button_center" id="client_button_' + counter + '">Edit</button></td></tr>';
-
                 counter += 1;
             }
-
             // Update schedule_table text with complete string
             $( '#schedule_table' ).html( placeholder );
             // Add click event to buttons
@@ -112,9 +112,7 @@ function update_dom( data ) {
                     });
                 })(i);
             }
-
         } else {
-
             for ( rows in parse_obj_data ) {
                 placeholder += '<div class="input_section"><span class="input_heading">' + ucfirst( rows ) + ' </span><div class="input_box no_edit" id="' + rows + '">' +  parse_obj_data[ rows ] + '</div><span id="error"></span></div>';
             }
@@ -122,12 +120,116 @@ function update_dom( data ) {
             $( '#' + property ).html( placeholder );
         }
     }
+}
+
+// Update schedule
+function update_schedule( key_string ) {
+    // Split string into array
+    var key_array = key_string.split(',');
+    // Create update array object
+    var update_array = {};
+    var table_name = 'acctg_invoice_client_schedules';
+    // Gather update data
+    for ( var key in key_array ) {
+        //console.log( $( '#' + key_array[ key ] ).text() );
+        update_array[ key_array[ key ] ] = $( '#' + key_array[ key ] ).text();
+    }
+    // Ajax call to update schedule
+    $.ajax({
+        type: 'post',
+        url: 'ajax.php',
+        data: { 'action': 'update_schedule', 'table_name': table_name, 'update_array': update_array },
+        success: function( data ) {
+            //console.log( data );
+            // Update client table
+            update_client();
+        },
+        error: function( jqXHR, textStatus, errorThrown ) {
+            console.log( errorThrown );
+        }
+    });
+    // Toggle overlay
+    toggle_overlay();
+}
+
+// Delete client by id
+function delete_client() {
+    if ( confirm( 'Do you want to delete the client?' ) ) {
+        // Get client id
+        client_id = $( '#client_id' ).html();
+        // Ajax call to delete all
+        $.ajax({
+            type: 'post',
+            url: 'ajax.php',
+            data: 'action=delete_client&client_id=' + client_id,
+            success: function( data ) {
+                // Refresh page
+                location.reload();
+                //console.log( data );
+            }
+        });
+    }
+}
+
+// Delete all function
+function delete_all() {
+    if ( confirm( 'Delete all records?' ) ) {
+        // Ajax call to delete all
+        $.ajax({
+            type: 'post',
+            url: 'ajax.php',
+            data: 'action=delete_all',
+            success: function( data ) {
+                // Refresh page
+                location.reload();
+            }
+        });
+    }
+}
+
+// Hide overlay div
+function toggle_overlay() {
+    $( '.overlay' ).toggle();
+}
+
+// Show display array content
+function show_display_array( title, display_array ) {
+    // Call toggle overlay
+    toggle_overlay();
+    $( '.title' ).html( title );
+    var parse_display_array = display_array;
+    var placeholder = '';
+    var key_array = [];
+
+    for ( var key in parse_display_array ) {
+        //console.log( key + ': ' + parse_display_array[ key ] );
+        placeholder += '<div class="input_section">';
+        if ( title == 'Audit Log Viewer' ) {
+            placeholder += '<span class="input_heading">' + ucfirst( key ) + '</span><div class="input_box no_edit" id="' + key + '">' + parse_display_array[ key ] + '</div>';
+        } else {
+            if ( key != 'acctg_invoice_client_schedules_id' ) {
+                placeholder += '<span class="input_heading">' + ucfirst( key ) + '</span><div class="input_box"  id="' + key + '"contenteditable>' + parse_display_array[ key ] + '</div>';
+            } else {
+                placeholder += '<div class="input_box no_edit" id="' + key + '">' + parse_display_array[ key ] + '</div>';
+            }
+        }
+        placeholder += '</div>';
+        // Append to key array
+        key_array.push( key );
+    }
+    if ( title == 'Client Edit') {
+        // Create update button and pass array
+        placeholder += '<button class="button_center" onclick="update_schedule( \'' + key_array +'\' )">Update</button>';
+    }
+    // Update div with placeholder
+    $( '#overlay_box' ).html( placeholder );
+    // Hide schedule id div
+    $( '#acctg_invoice_client_schedules_id').hide();
 
 }
 
 // Upload CSV
 function upload_csv() {
-
     // Check if file is selected
     if ( $( '#csv_file' ).val() != '' ) {
         if ( !file_supported() ) {
@@ -135,12 +237,10 @@ function upload_csv() {
         } else {
             // Remove previous csv output div
             $( '#csv_output' ).html('');
-
             // Parse CSV file to display in table
             var data = null;
             var csv_file = $( 'input#csv_file' ).prop( 'files' )[0];
             var reader = new FileReader();
-
             // HTML5 FileReader to display CSV file
             reader.readAsText( csv_file );
             // Get filename
@@ -153,15 +253,12 @@ function upload_csv() {
                 table_name = reader.fileName.substr( 0, reader.fileName.indexOf( '.' ) );
 
                 if ( csv_array && csv_array.length > 0 ) {
-
                     var heading = '<thead>';
                     var body = '<tbody>';
                     // Update div with csv_array
                     for ( key in csv_array ) {
-
                         heading += '<tr>';
                         body += '<tr>';
-
                         for ( item in csv_array[ key ] ) {
                             // For table heading
                             if ( key === '0' ) {
@@ -169,28 +266,23 @@ function upload_csv() {
                             } else {
                                 body += '<td>' + csv_array[ key ][ item ] + '</td>';
                             }
-
                         }
                         if ( key === '0' ) {
                             heading += '</tr>';
                         }
                         body += '</tr>';
-
                     }
                     heading += '</thead>';
                     body += '</tbody>';
-
                     // Append head and body to table
                     $( '#csv_output' ).append( heading + body );
                     // Unhide CSV output container
                     $( '#csv_output_container' ).show();
                 }
-
             };
             reader.onerror = function() {
                 alert( 'Unable to read ' + csv_file.fileName );
             };
-
         }
         // Reset input file
         $( '#csv_file' ).replaceWith( $( '#csv_file' ).val( '' ).clone( true ) );
@@ -222,136 +314,10 @@ function post_csv_upload() {
     });
 }
 
-// Update schedule
-function update_schedule( key_string ) {
-    // Split string into array
-    var key_array = key_string.split(',');
-    // Create update array object
-    var update_array = {};
-
-    var table_name = 'acctg_invoice_client_schedules';
-    // Gather update data
-    for ( var key in key_array ) {
-        //console.log( $( '#' + key_array[ key ] ).text() );
-        update_array[ key_array[ key ] ] = $( '#' + key_array[ key ] ).text();
-    }
-    // Ajax call to update schedule
-    $.ajax({
-        type: 'post',
-        url: 'ajax.php',
-        data: { 'action': 'update_schedule', 'table_name': table_name, 'update_array': update_array },
-        success: function( data ) {
-            //console.log( data );
-            // Update client table
-            update_client();
-        },
-        error: function( jqXHR, textStatus, errorThrown ) {
-            console.log( errorThrown );
-        }
-    });
-    // Toggle overlay
-    toggle_overlay();
-
-}
-
-// Delete client by id
-function delete_client() {
-
-    if ( confirm( 'Do you want to delete the client?' ) ) {
-        // Get client id
-        client_id = $( '#client_id' ).html();
-        // Ajax call to delete all
-        $.ajax({
-            type: 'post',
-            url: 'ajax.php',
-            data: 'action=delete_client&client_id=' + client_id,
-            success: function( data ) {
-                // Refresh page
-                location.reload();
-                //console.log( data );
-            }
-        });
-
-    }
-}
-
-// Delete all function
-function delete_all() {
-
-    if ( confirm( 'Delete all records?' ) ) {
-        // Ajax call to delete all
-        $.ajax({
-            type: 'post',
-            url: 'ajax.php',
-            data: 'action=delete_all',
-            success: function( data ) {
-                // Refresh page
-                location.reload();
-            }
-        });
-    }
-}
-
-
-// Hide overlay div
-function toggle_overlay() {
-    $( '.overlay' ).toggle();
-}
-
-// Show display array content
-function show_display_array( title, display_array ) {
-    // Call toggle overlay
-    toggle_overlay();
-
-    $( '.title' ).html( title );
-
-    var parse_display_array = display_array;
-
-    var placeholder = '';
-    var key_array = [];
-
-    for ( var key in parse_display_array ) {
-        //console.log( key + ': ' + parse_display_array[ key ] );
-        placeholder += '<div class="input_section">';
-
-        if ( title == 'Audit Log Viewer' ) {
-            placeholder += '<span class="input_heading">' + ucfirst( key ) + '</span><div class="input_box no_edit" id="' + key + '">' + parse_display_array[ key ] + '</div>';
-        } else {
-            if ( key != 'acctg_invoice_client_schedules_id' ) {
-                placeholder += '<span class="input_heading">' + ucfirst( key ) + '</span><div class="input_box"  id="' + key + '"contenteditable>' + parse_display_array[ key ] + '</div>';
-            } else {
-                placeholder += '<div class="input_box no_edit" id="' + key + '">' + parse_display_array[ key ] + '</div>';
-            }
-        }
-        placeholder += '</div>';
-        // Append to key array
-        key_array.push( key );
-
-    }
-
-    if ( title == 'Client Edit') {
-        // Create update button and pass array
-        placeholder += '<button class="button_center" onclick="update_schedule( \'' + key_array +'\' )">Update</button>';
-
-    }
-    // Update div with placeholder
-    $( '#overlay_box' ).html( placeholder );
-    // Hide schedule id div
-    $( '#acctg_invoice_client_schedules_id').hide();
-
-}
-
-// Delete cookie
-function delete_cookie( cookie_name ) {
-    document.cookie = cookie_name + '=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/';
-    location.reload();
-}
-
 /*
     Ready function loaded when DOM loaded
 */
 $( document ).ready( function() {
-
     // Define variables
     var csv_array = '';
     var table_name = '';
@@ -361,8 +327,6 @@ $( document ).ready( function() {
     // Client search box
     $( '.client_box' ).click( function() {
         $( this ).html( '' );
-
-
     } );
     $( '.client_box' ).focusout( function() {
         if ( $( this ).html() == '' ) {
@@ -406,5 +370,4 @@ $( document ).ready( function() {
     $( '.audit_box' ).click( function (e) {
         return false;
     } );
-
 })
