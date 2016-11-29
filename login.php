@@ -11,7 +11,7 @@ if ( isset( $_COOKIE['tally_user_id'] ) ) {
 } else {
     // Load functions
     include( 'functions.php' );
-
+    // Check username and password for login
     if ( isset( $_POST['username'] ) && ! empty( $_POST['username'] ) && isset( $_POST['password'] ) && ! empty( $_POST['password'] ) ) {
         $user = wp_tally_login( $_POST['username'], $_POST['password']);
         if ( ! empty( $user ) ) {
@@ -23,12 +23,11 @@ if ( isset( $_COOKIE['tally_user_id'] ) ) {
         }
     }
 }
-
 ?>
 <div class="wrapper">
     <div class="heading">Tally</div>
     <div class="wrapper login_box">
-
+        <!-- Login form -->
         <form id="login_form" method="post">
             <div class="input_section">
                 <div class="input_heading">Username</div>

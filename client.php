@@ -1,4 +1,3 @@
-
 <div class="wrapper">
     <div class="input_box client_box" contenteditable>Search Clients</div>
     <button onclick="update_client()">Search</button>
@@ -11,7 +10,6 @@
 
     <?php
     // acctg_invoice_clients table query
-
     $results = select_query_client( $client_id, 'meta_key, meta_value', $client_table );
 
     if ( $results ) {

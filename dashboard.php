@@ -1,10 +1,9 @@
-<!--
-<div class="wrapper">
-    <div class="input_box client_box" contenteditable>Search Clients</div>
-    <button>Search</button>
-</div>
--->
+<?php
 
+// For Dashboard
+$current_month = date( 'm' );
+
+?>
 <div class="wrapper">
 
     <div class="input_section">
@@ -17,14 +16,6 @@
 
                 </th>
                 <?php
-
-                $input_array = array(
-                    'client_id' => '123',
-                    'meta_key' => 'name,sf_link,email',
-                    'meta_value' => 'Turner,https://salesforce.com/turner,contact@turner.com'
-                );
-                print_r( track_field_change( '123', $client_table, $input_array )['old'] );
-
 
                 // Define months array
                 $months_array = array(

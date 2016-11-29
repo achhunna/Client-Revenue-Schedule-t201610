@@ -1,5 +1,12 @@
 <?php
 
+/**
+ *
+ *    Ajax actions
+ *
+*/
+
+// Load functions
 include( 'functions.php' );
 
 // Define POST variables
@@ -7,7 +14,7 @@ $action = $_POST['action'];
 // Get mc_user_id from cookie
 $mc_user_id = $_COOKIE['tally_user_id'];
 
-// Check if action is update
+// Check if action is update client
 if ( $action == 'update_client' ) {
 
     $client_name = $_POST['client_name'];
@@ -41,7 +48,7 @@ if ( $action == 'update_client' ) {
     } else {
         echo false;
     }
-
+// Check if action is to parse csv file to post to database
 } elseif ( $action == 'parse_csv' ) {
 
     $table_name = $_POST['table_name'];
@@ -58,36 +65,27 @@ if ( $action == 'update_client' ) {
                 case $client_table:
                     // Insert data into client table
                     $return_array = insert_query_client( $csv_array[ $i ][0], $csv_array[ $i ][1], $csv_array[ $i ][2] );
-
                     break;
                 case $client_deals_table:
                     // Insert data into deals table
                     $return_array = insert_query_client_deals( $csv_array[ $i ][0], $csv_array[ $i ][1], $csv_array[ $i ][2], $csv_array[ $i ][3] );
-
                     break;
                 case $schedule_table:
                     // Insert data into schedule table
                     $return_array = insert_query_schedule( $csv_array[ $i ][0], $csv_array[ $i ][1], $csv_array[ $i ][2], $csv_array[ $i ][3],  $csv_array[ $i ][4], $csv_array[ $i ][5] );
-
                     break;
                 }
-
             // Make update to log table
             update_log_change( $mc_user_id, 'csv', $table_name, $return_array['id'], $return_array['old'], $csv_array[ $i ] );
         }
-
     }
     echo true;
-
+// Check if action is update schedule for client
 } elseif ( $action == 'update_schedule' ) {
 
     $table_name = $_POST['table_name'];
     $update_array = $_POST['update_array'];
     $schedule_id = 'acctg_invoice_client_schedules_id';
-
-    foreach ( $update_array as $key => $value ) {
-        //echo $key . ": " . $value . "\n";
-    }
 
     $where = array(
         $schedule_id => $update_array[ $schedule_id ]
@@ -111,7 +109,7 @@ if ( $action == 'update_client' ) {
     update_log_change( $mc_user_id, 'app', $table_name, $return_array['id'], $return_array['old'], $return_array['new'] );
 
     return true;
-
+// Check if action is to delete client
 } elseif ( $action == 'delete_client' ) {
 
     $client_id = $_POST['client_id'];
@@ -136,21 +134,7 @@ if ( $action == 'update_client' ) {
             }
         }
     }
-
-} elseif ( $action == 'autocomplete' ) {
-
-    /*
-    $name_array = array();
-    $meta_results = select_query_no_criteria( 'meta_key, meta_value', $client_table );
-
-    foreach ( $meta_results as $item ) {
-        array_push( $name_array, parse_client_meta( $item )['name'] );
-    }
-
-    echo json_encode( $name_array );
-    */
-
-
+// Check if delete all, for test purpose
 } elseif ( $action == 'delete_all' ) {
     // Use for test purpose only
     delete_all();

@@ -1,3 +1,9 @@
+/**
+ *
+ *    Scripts
+ *
+*/
+
 // Number format function
 function number_format( input ) {
     return input.toString().replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1,');
@@ -340,7 +346,6 @@ function delete_cookie( cookie_name ) {
     document.cookie = cookie_name + '=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/';
     location.reload();
 }
-
 
 /*
     Ready function loaded when DOM loaded

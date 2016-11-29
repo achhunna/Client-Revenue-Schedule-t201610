@@ -1,21 +1,22 @@
 <?php
 
-/* Display errors */
+/**
+ *
+ *    Functions
+ *
+*/
+
+// Display errors
 error_reporting( E_ALL );
 ini_set( "display_errors", 1 );
 
 // Load WordPress files
-require_once( '../../wordpress/wp-load.php' );
-require_once( '../../wordpress/wp-includes/wp-db.php' );
-
-// header( 'Content-Type: text/plain' ); // for CSV reading demo
+require_once( '../wp/wp-load.php' );
+require_once( '../wp/wp-includes/wp-db.php' );
 
 /*
     Define variables
 */
-
-// For Dashboard
-$current_month = date( 'm' );
 
 // Set default time zone
 date_default_timezone_set( 'America/Los_Angeles' );
@@ -25,12 +26,12 @@ function month_number( $monthNum ) {
     return date("M", mktime(0, 0, 0, $monthNum, 10));
 }
 
-// For Client Detail
+// Defining table names
 $client_table       = 'acctg_invoice_clients';
 $client_deals_table = 'acctg_invoice_clients_key_dates';
 $schedule_table     = 'acctg_invoice_client_schedules';
 $change_log_table   = 'acctg_change_log';
-
+// Default client to load
 $client_id          = 123;
 
 /*
@@ -265,8 +266,6 @@ function is_correct_type( $table_name, $field_name, $field_value) {
             }
 
         }
-
-
 }
 
 // Check date format
@@ -851,7 +850,7 @@ function delete_all() {
 }
 
 /*
-    CSV functions
+    Other functions
 */
 // Read CSV file and return an array of rows
 function read_csv( $file ) {
@@ -912,9 +911,6 @@ function parse_meta_client( $csv_array, $table_name ) {
     }
 }
 
-/*
-    Other functions
-*/
 // Parse client meta_key and meta_value into array( key, value )
 function parse_client_meta( $output ) {
     foreach ( $output as $key => $value ) {
