@@ -9,9 +9,12 @@
 error_reporting( E_ALL );
 ini_set( "display_errors", 1 );
 
-// Load WordPress files
-require_once( '../wp/wp-load.php' );
+// Load WordPress instantiation files
+define( 'WP_INSTALLING', true );
+// Load WordPress bootstrap
+require( '../wp/wp-load.php' );
 require_once( '../wp/wp-includes/wp-db.php' );
+//require_once( '../wp/wp-admin/upgrade.php' );
 
 /*
     Define variables

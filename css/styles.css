@@ -5,7 +5,7 @@
  */
 
 body {
-    font-family: Arial, San-serif;
+    font-family: -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Oxygen-Sans,Ubuntu,Cantarell,"Helvetica Neue",sans-serif !important;
     font-size: 15px;
 }
 
@@ -205,6 +205,11 @@ tr.no_border td {
 }
 .right {
     float: right;
+}
+
+/* jQuery UI override */
+.ui-widget {
+    font-family: -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Oxygen-Sans,Ubuntu,Cantarell,"Helvetica Neue",sans-serif !important;
 }
 
 /* footer */
