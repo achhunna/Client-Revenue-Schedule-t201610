@@ -14,6 +14,3 @@
         <table class="list" id="csv_output"></table>
     </div>
 </div>
-
-<!-- Leave blank for spacing -->
-<div class="wrapper"></div>

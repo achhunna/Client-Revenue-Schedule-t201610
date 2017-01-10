@@ -165,6 +165,3 @@ $current_month = date( 'm' );
         </tbody>
     </table>
 </div>
-
-<!-- Leave blank for spacing -->
-<div class="wrapper"></div>
