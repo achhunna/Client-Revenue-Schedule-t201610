@@ -231,74 +231,82 @@ function show_display_array( title, display_array ) {
 // Upload CSV
 function upload_csv() {
     // Check if file is selected
-    if ( $( '#csv_file' ).val() != '' ) {
+    if ( $( '#csv_file' ).val() !== '' ) {
         if ( !file_supported() ) {
             alert( 'The File APIs are not fully supported in this browser!' );
         } else {
-            // Remove previous csv output div
-            $( '#csv_output' ).html('');
-            // Parse CSV file to display in table
-            var data = null;
-            var csv_file = $( 'input#csv_file' ).prop( 'files' )[0];
+
+            // Get the filename
+            var csv_file = $( '#csv_file' ).prop( 'files' )[0];
+            // HTML5 FileReader object to display CSV file
             var reader = new FileReader();
-            // HTML5 FileReader to display CSV file
             reader.readAsText( csv_file );
             // Get filename
             reader.fileName = csv_file.name;
-            reader.onload = function ( e ) {
-                var csv_data = e.target.result;
+            reader.onload = function ( file ) {
+                var csv_data = file.target.result;
                 // Convert data to array
-                csv_array = $.csv.toArrays( csv_data );
-                // Extract table name from filename
-                table_name = reader.fileName.substr( 0, reader.fileName.indexOf( '.' ) );
+                var csv_array = $.csv.toArrays( csv_data );
+                // Extract table name from filename by removing extension
+                var table_name = reader.fileName.substr( 0, reader.fileName.indexOf( '.' ) );
 
                 if ( csv_array && csv_array.length > 0 ) {
-                    var heading = '<thead>';
-                    var body = '<tbody>';
-                    // Update div with csv_array
-                    for ( key in csv_array ) {
-                        heading += '<tr>';
-                        body += '<tr>';
-                        for ( item in csv_array[ key ] ) {
-                            // For table heading
-                            if ( key === '0' ) {
-                                heading += '<th>' + csv_array[ key ][ item ] + '</th>';
-                            } else {
-                                body += '<td>' + csv_array[ key ][ item ] + '</td>';
-                            }
-                        }
-                        if ( key === '0' ) {
-                            heading += '</tr>';
-                        }
-                        body += '</tr>';
-                    }
-                    heading += '</thead>';
-                    body += '</tbody>';
-                    // Append head and body to table
-                    $( '#csv_output' ).append( heading + body );
+                    // Update DOM with CSV table
+                    $( '#csv_output' ).html( update_csv_dom( csv_array ) );
                     // Unhide CSV output container
                     $( '#csv_output_container' ).show();
+                    // Callback function to post csv data on click event
+                    $('#post_csv').click( function () {
+                        post_csv_upload( table_name, csv_array );
+                    } );
                 }
             };
             reader.onerror = function() {
                 alert( 'Unable to read ' + csv_file.fileName );
             };
+            // Reset input file
+            $( '#csv_file' ).replaceWith( $( '#csv_file' ).val( '' ).clone( true ) );
         }
-        // Reset input file
-        $( '#csv_file' ).replaceWith( $( '#csv_file' ).val( '' ).clone( true ) );
     }
+}
+
+// Update DOM for CSV
+function update_csv_dom( csv_array ) {
+    var heading = '<thead>';
+    var body = '<tbody>';
+    // Update div with csv_array
+    for ( key in csv_array ) {
+        heading += '<tr>';
+        body += '<tr>';
+        for ( item in csv_array[ key ] ) {
+            // For table heading
+            if ( key === '0' ) {
+                heading += '<th>' + csv_array[ key ][ item ] + '</th>';
+            } else {
+                body += '<td>' + csv_array[ key ][ item ] + '</td>';
+            }
+        }
+        if ( key === '0' ) {
+            heading += '</tr>';
+        }
+        body += '</tr>';
+    }
+    heading += '</thead>';
+    body += '</tbody>';
+
+    return heading + body;
 }
 
 // Cancel CSV upload
 function reset_csv_upload() {
     // Hide CSV output container
     $( '#csv_output_container' ).hide();
-    // Remove csv output div
-    $( '#csv_output' ).html('');
+
 }
 
 // Post CSV file
-function post_csv_upload() {
+function post_csv_upload( table_name, csv_array ) {
+
     // Ajax call to upload CSV
     $.ajax({
         type: 'post',
@@ -306,21 +314,22 @@ function post_csv_upload() {
         data: { 'action': 'parse_csv', 'table_name': table_name, 'csv_array': csv_array },
         success: function( data ) {
             if ( data ) {
+                $('.input_heading').html('Uploading file...').css({'font-weight': 'bold', 'color': '#800000'});
                 // Refresh page
-                location.reload();
-                //console.log( data );
+                setTimeout(function() { location.reload(); }, 1000);
             }
         }
     });
 }
 
+
+// Define variables
+//var csv_array, table_name;
 /*
     Ready function loaded when DOM loaded
 */
 $( document ).ready( function() {
-    // Define variables
-    var csv_array = '';
-    var table_name = '';
+
     // Load default div partial
     switch_partial( 'dashboard' );
 

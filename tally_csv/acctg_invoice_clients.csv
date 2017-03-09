@@ -1,8 +1,4 @@
 client_id,name,sf_link,email
-123,Turner,https://salesforce.com/turner,contact@turner.com
-234,Nytimes,https://salesforce.com/nytimes,contact@nytimes.com
-325,Microsoft,https://salesforce.com/microsoft,contact@microsoft.com
-456,Wired,https://salesforce.com/wired,contact@wired.com
-567,Wirecutter,https://salesforce.com/wirecutter,contact@wirecutter.com
-100,Washington Post,https://salesforce.com/wp,contact@wp.com
-101,Engadget,https://salesforce.com/engadget,contact@engadget.com
+612,Tesla,http://salesforce.com/tesla,sales@tesla.com
+613,Voluptate,http://salesforce.com/voluptate,sales@voluptate.com
+614,EA,http://salesforce.com/ea,contact@ea.com

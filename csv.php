@@ -8,7 +8,7 @@
     <!-- Output container -->
     <div class="container" id="csv_output_container">
         <b>Ready to upload?</b>
-        <button onclick="post_csv_upload()">Upload</button>
+        <button id="post_csv">Upload</button>
         <button onclick="reset_csv_upload()">Cancel</button>
         <br><br>
         <table class="list" id="csv_output"></table>
